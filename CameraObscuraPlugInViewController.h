@@ -9,5 +9,7 @@
 #import <Quartz/Quartz.h>
 
 @interface CameraObscuraPlugInViewController : QCPlugInViewController {
+    NSPopUpButton* _devicesPopUp;
 }
+@property (nonatomic, assign) IBOutlet NSPopUpButton* devicesPopUp;
 @end

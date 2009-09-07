@@ -10,6 +10,8 @@
 
 @implementation CameraObscuraPlugInViewController
 
+@synthesize devicesPopUp = _devicesPopUp;
+
 - (id)initWithPlugIn:(QCPlugIn*)plugIn viewNibName:(NSString*)name {
     self = [super initWithPlugIn:plugIn viewNibName:name];
     if (self) {
@@ -19,6 +21,10 @@
 
 - (void)dealloc {
     [super dealloc];
+}
+
+- (void)awakeFromNib {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 
 @end
