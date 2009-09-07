@@ -8,8 +8,7 @@
 
 #import <Quartz/Quartz.h>
 
-@interface CameraObscuraPlugIn : QCPlugIn
-{
+@interface CameraObscuraPlugIn : QCPlugIn {
 }
 
 /*
