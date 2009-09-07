@@ -29,19 +29,11 @@
 }
 
 + (QCPlugInExecutionMode)executionMode {
-	/*
-	Return the execution mode of the plug-in: kQCPlugInExecutionModeProvider, kQCPlugInExecutionModeProcessor, or kQCPlugInExecutionModeConsumer.
-	*/
-
-	return kQCPlugInExecutionModeProcessor;
+	return kQCPlugInExecutionModeProvider;
 }
 
 + (QCPlugInTimeMode)timeMode {
-	/*
-	Return the time dependency mode of the plug-in: kQCPlugInTimeModeNone, kQCPlugInTimeModeIdle or kQCPlugInTimeModeTimeBase.
-	*/
-
-	return kQCPlugInTimeModeNone;
+	return kQCPlugInTimeModeIdle;
 }
 
 - (id)init {
