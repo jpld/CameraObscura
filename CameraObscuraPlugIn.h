@@ -11,5 +11,5 @@
 @interface CameraObscuraPlugIn : QCPlugIn {
 }
 @property (nonatomic) BOOL inputCapture;
-@property (nonatomic, retain) id<QCPlugInOutputImageProvider> outputImage;
+@property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
 @end

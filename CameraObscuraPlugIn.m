@@ -7,6 +7,7 @@
 //
 
 #import "CameraObscuraPlugIn.h"
+#import "CameraObscuraPlugInViewController.h"
 #import <ImageCaptureCore/ImageCaptureCore.h>
 
 #define	kQCPlugIn_Name				@"Camera"
@@ -22,9 +23,9 @@
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
     if ([key isEqualToString:@"inputCapture"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture", QCPortAttributeNameKey, /*[NSNumber numberWithUnsignedInteger:0], QCPortAttributeDefaultValueKey,*/ nil];
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, /*[NSNumber numberWithUnsignedInteger:0], QCPortAttributeDefaultValueKey,*/ nil];
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
 	return nil;
 }
 
@@ -34,6 +35,10 @@
 
 + (QCPlugInTimeMode)timeMode {
 	return kQCPlugInTimeModeIdle;
+}
+
++ (NSArray*)plugInKeys {
+    return [NSArray arrayWithObjects:nil];
 }
 
 - (id)init {
@@ -62,14 +67,6 @@
 	[super dealloc];
 }
 
-+ (NSArray*)plugInKeys {
-	/*
-	Return a list of the KVC keys corresponding to the internal settings of the plug-in.
-	*/
-
-	return nil;
-}
-
 - (id)serializedValueForKey:(NSString*)key {
 	/*
 	Provide custom serialization for the plug-in internal settings that are not values complying to the <NSCoding> protocol.
@@ -89,12 +86,7 @@
 }
 
 - (QCPlugInViewController*)createViewController {
-	/*
-	Return a new QCPlugInViewController to edit the internal settings of this plug-in instance.
-	You can return a subclass of QCPlugInViewController if necessary.
-	*/
-
-	return [[QCPlugInViewController alloc] initWithPlugIn:self viewNibName:@"Settings"];
+	return [[CameraObscuraPlugInViewController alloc] initWithPlugIn:self viewNibName:@"Settings"];
 }
 
 @end
