@@ -16,24 +16,17 @@
 
 @implementation CameraObscuraPlugIn
 
-/*
-Here you need to declare the input / output properties as dynamic as Quartz Composer will handle their implementation
-@dynamic inputFoo, outputBar;
-*/
+@dynamic inputCapture, outputImage;
 
 + (NSDictionary*)attributes {
-	/*
-	Return a dictionary of attributes describing the plug-in (QCPlugInAttributeNameKey, QCPlugInAttributeDescriptionKey...).
-	*/
-
 	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
 }
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
-	/*
-	Specify the optional attributes for property based ports (QCPortAttributeNameKey, QCPortAttributeDefaultValueKey...).
-	*/
-
+    if ([key isEqualToString:@"inputCapture"])
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture", QCPortAttributeNameKey, /*[NSNumber numberWithUnsignedInteger:0], QCPortAttributeDefaultValueKey,*/ nil];
+    else if ([key isEqualToString:@"outputImage"])
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, /*[NSNumber numberWithUnsignedInteger:0], QCPortAttributeDefaultValueKey,*/ nil];
 	return nil;
 }
 
