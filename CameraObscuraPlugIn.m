@@ -6,10 +6,8 @@
 //  Copyright (c) 2009 __MyCompanyName__. All rights reserved.
 //
 
-/* It's highly recommended to use CGL macros instead of changing the current context for plug-ins that perform OpenGL rendering */
-#import <OpenGL/CGLMacro.h>
-
 #import "CameraObscuraPlugIn.h"
+#import <ImageCaptureCore/ImageCaptureCore.h>
 
 #define	kQCPlugIn_Name				@"CameraObscura"
 #define	kQCPlugIn_Description		@"This patch captures and returns an image from a given camera input device."
