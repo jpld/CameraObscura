@@ -12,7 +12,7 @@
 #import "CameraObscuraPlugIn.h"
 
 #define	kQCPlugIn_Name				@"CameraObscura"
-#define	kQCPlugIn_Description		@"CameraObscura description"
+#define	kQCPlugIn_Description		@"This patch captures and returns an image from a given camera input device."
 
 @implementation CameraObscuraPlugIn
 
