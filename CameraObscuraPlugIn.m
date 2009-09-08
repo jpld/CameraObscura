@@ -93,44 +93,59 @@
 
 @implementation CameraObscuraPlugIn(Execution)
 
-- (BOOL) startExecution:(id<QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when rendering of the composition starts: perform any required setup for the plug-in.
-	Return NO in case of fatal failure (this will prevent rendering of the composition to start).
-	*/
+- (BOOL)startExecution:(id<QCPlugInContext>)context {
+    /*
+    Called by Quartz Composer when rendering of the composition starts: perform any required setup for the plug-in.
+    Return NO in case of fatal failure (this will prevent rendering of the composition to start).
+    */
 
-	return YES;
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    return YES;
 }
 
 - (void)enableExecution:(id<QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when the plug-in instance starts being used by Quartz Composer.
-	*/
+    /*
+    Called by Quartz Composer when the plug-in instance starts being used by Quartz Composer.
+    */
+
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
-	/*
-	Called by Quartz Composer whenever the plug-in instance needs to execute.
-	Only read from the plug-in inputs and produce a result (by writing to the plug-in outputs or rendering to the destination OpenGL context) within that method and nowhere else.
-	Return NO in case of failure during the execution (this will prevent rendering of the current frame to complete).
-	
-	The OpenGL context for rendering can be accessed and defined for CGL macros using:
-	CGLContextObj cgl_ctx = [context CGLContextObj];
-	*/
+    /*
+    Called by Quartz Composer whenever the plug-in instance needs to execute.
+    Only read from the plug-in inputs and produce a result (by writing to the plug-in outputs or rendering to the destination OpenGL context) within that method and nowhere else.
+    Return NO in case of failure during the execution (this will prevent rendering of the current frame to complete).
 
-	return YES;
+    The OpenGL context for rendering can be accessed and defined for CGL macros using:
+    CGLContextObj cgl_ctx = [context CGLContextObj];
+    */
+
+    // only act on the rising edge of capture
+    if (!([self didValueForInputKeyChange:@"inputCapture"] && self.inputCapture))
+        return YES;
+
+    // TODO - do something of significance
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    return YES;
 }
 
 - (void)disableExecution:(id<QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
-	*/
+    /*
+    Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
+    */
+
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 
 - (void)stopExecution:(id<QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
-	*/
+    /*
+    Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
+    */
+
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 
 @end
