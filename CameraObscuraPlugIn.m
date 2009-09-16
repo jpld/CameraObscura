@@ -8,7 +8,6 @@
 
 #import "CameraObscuraPlugIn.h"
 #import "CameraObscuraPlugInViewController.h"
-#import <ImageCaptureCore/ImageCaptureCore.h>
 
 #define	kQCPlugIn_Name				@"Camera"
 #define	kQCPlugIn_Description		@"This patch captures and returns an image from a given camera input device."
@@ -16,6 +15,7 @@
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCapture, outputImage;
+@synthesize deviceBrowser = _deviceBrowser;
 
 + (NSDictionary*)attributes {
 	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
@@ -41,13 +41,22 @@
     return [NSArray arrayWithObjects:nil];
 }
 
+#pragma mark -
+
 - (id)init {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
     self = [super init];
 	if (self) {
 		/*
 		Allocate any permanent resource required by the plug-in.
 		*/
-	}
+
+        _deviceBrowser = [[ICDeviceBrowser alloc] init];
+        _deviceBrowser.delegate = self;
+        _deviceBrowser.browsedDeviceTypeMask = ICDeviceLocationTypeMaskLocal | ICDeviceTypeMaskCamera;
+        [_deviceBrowser start];
+    }
 	return self;
 }
 
@@ -55,6 +64,12 @@
 	/*
 	Release any non garbage collected resources created in -init.
 	*/
+
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    [_deviceBrowser stop];
+    _deviceBrowser.delegate = nil;
+    [_deviceBrowser release];
 
 	[super finalize];
 }
@@ -64,8 +79,16 @@
 	Release any resources created in -init.
 	*/
 
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    [_deviceBrowser stop];
+    _deviceBrowser.delegate = nil;
+    [_deviceBrowser release];
+
 	[super dealloc];
 }
+
+#pragma mark -
 
 - (id)serializedValueForKey:(NSString*)key {
 	/*
@@ -89,9 +112,8 @@
 	return [[CameraObscuraPlugInViewController alloc] initWithPlugIn:self viewNibName:@"Settings"];
 }
 
-@end
-
-@implementation CameraObscuraPlugIn(Execution)
+#pragma mark -
+#pragma mark EXECUTION
 
 - (BOOL)startExecution:(id<QCPlugInContext>)context {
     /*
@@ -145,6 +167,27 @@
     Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
     */
 
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+#pragma mark -
+#pragma mark DEVICE BROWSER DELEGATE
+
+- (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    NSLog(@"%@", device);
+}
+
+- (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)deviceBrowser:(ICDeviceBrowser*)browser deviceDidChangeName:(ICDevice*)device {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)deviceBrowserDidEnumerateLocalDevices:(ICDeviceBrowser*)browser {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 

@@ -7,9 +7,13 @@
 //
 
 #import <Quartz/Quartz.h>
+#import <ImageCaptureCore/ImageCaptureCore.h>
 
-@interface CameraObscuraPlugIn : QCPlugIn {
+@interface CameraObscuraPlugIn : QCPlugIn <ICDeviceBrowserDelegate> {
+@private
+    ICDeviceBrowser* _deviceBrowser;
 }
 @property (nonatomic) BOOL inputCapture;
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
+@property (nonatomic, readonly) ICDeviceBrowser* deviceBrowser;
 @end
