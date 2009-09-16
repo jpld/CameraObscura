@@ -10,7 +10,7 @@
 #import "CameraObscuraPlugInViewController.h"
 
 #define	kQCPlugIn_Name				@"Camera"
-#define	kQCPlugIn_Description		@"This patch captures and returns an image from a given camera input device."
+#define	kQCPlugIn_Description		@"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
 
 @implementation CameraObscuraPlugIn
 
