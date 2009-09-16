@@ -48,6 +48,7 @@
 		7238D5510DB6988600E9A42D /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Settings.xib; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* CameraObscura.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CameraObscura.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D800D3661061668A00213712 /* Camera Capture.qtz */ = {isa = PBXFileReference; lastKnownFileType = "video.quartz-composer"; path = "Camera Capture.qtz"; sourceTree = "<group>"; };
 		D8572EEA1055AB16002CD93B /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		D8572F2E1055B64C002CD93B /* ImageCaptureCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageCaptureCore.framework; path = /System/Library/Frameworks/ImageCaptureCore.framework; sourceTree = "<absolute>"; };
 		D8572FE61055C7CE002CD93B /* CameraObscuraPlugInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraObscuraPlugInViewController.h; sourceTree = "<group>"; };
@@ -93,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				D8572EEA1055AB16002CD93B /* README */,
+				D800D3661061668A00213712 /* Camera Capture.qtz */,
 				7238D5500DB6988600E9A42D /* Settings.xib */,
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 			);
