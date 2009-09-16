@@ -12,4 +12,5 @@
     NSPopUpButton* _devicesPopUp;
 }
 @property (nonatomic, assign) IBOutlet NSPopUpButton* devicesPopUp;
+- (IBAction)selectedDeviceChanged:(id)sender;
 @end

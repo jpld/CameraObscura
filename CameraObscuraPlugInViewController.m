@@ -23,7 +23,15 @@
     [super dealloc];
 }
 
+#pragma mark - 
+
 - (void)awakeFromNib {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+#pragma mark -
+
+- (IBAction)selectedDeviceChanged:(id)sender {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 
