@@ -26,6 +26,7 @@
 		16BA96310A7EB9AC001E4983 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BA96300A7EB9AC001E4983 /* Quartz.framework */; };
 		7238D5520DB6988600E9A42D /* Settings.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7238D5500DB6988600E9A42D /* Settings.xib */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
+		D800D3A0106183EB00213712 /* ImageCaptureCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8572F2E1055B64C002CD93B /* ImageCaptureCore.framework */; };
 		D8572FE81055C7CE002CD93B /* CameraObscuraPlugInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8572FE71055C7CE002CD93B /* CameraObscuraPlugInViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +63,7 @@
 			files = (
 				8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */,
 				16BA96310A7EB9AC001E4983 /* Quartz.framework in Frameworks */,
+				D800D3A0106183EB00213712 /* ImageCaptureCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
