@@ -12,10 +12,14 @@
 #define	kQCPlugIn_Name				@"Camera"
 #define	kQCPlugIn_Description		@"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
 
+@interface CameraObscuraPlugIn()
+@property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
+@end
+
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCapture, outputImage;
-@synthesize deviceBrowser = _deviceBrowser;
+@synthesize deviceBrowser = _deviceBrowser, camera = _camera;
 
 + (NSDictionary*)attributes {
 	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
@@ -44,47 +48,29 @@
 #pragma mark -
 
 - (id)init {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
     self = [super init];
 	if (self) {
-		/*
-		Allocate any permanent resource required by the plug-in.
-		*/
-
-        _deviceBrowser = [[ICDeviceBrowser alloc] init];
-        _deviceBrowser.delegate = self;
-        _deviceBrowser.browsedDeviceTypeMask = ICDeviceLocationTypeMaskLocal | ICDeviceTypeMaskCamera;
-        [_deviceBrowser start];
+        self.deviceBrowser = [[ICDeviceBrowser alloc] init];
+        self.deviceBrowser.delegate = self;
+        self.deviceBrowser.browsedDeviceTypeMask = ICDeviceLocationTypeMaskLocal | ICDeviceTypeMaskCamera;
+        [self.deviceBrowser start];
     }
 	return self;
 }
 
 - (void)finalize {
-	/*
-	Release any non garbage collected resources created in -init.
-	*/
-
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
-    [_deviceBrowser stop];
-    _deviceBrowser.delegate = nil;
+    [self.deviceBrowser stop];
+    self.deviceBrowser.delegate = nil;
     [_deviceBrowser release];
 
 	[super finalize];
 }
 
 - (void)dealloc {
-	/*
-	Release any resources created in -init.
-	*/
-
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
-    [_deviceBrowser stop];
-    _deviceBrowser.delegate = nil;
+    [self.deviceBrowser stop];
+    self.deviceBrowser.delegate = nil;
     [_deviceBrowser release];
-
+    
 	[super dealloc];
 }
 
@@ -176,18 +162,74 @@
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    NSLog(@"%@", device);
+    if (self.camera)
+        return;
+
+    // TODO - for now grab the first and run with it, but we should get picky later
+    self.camera = (ICCameraDevice*)device;
+    self.camera.delegate = self;
+    [self.camera requestOpenSession];
+    NSLog(@"%@", self.camera);
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (device != self.camera)
+        return;
+    // it is personal
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser deviceDidChangeName:(ICDevice*)device {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    // TODO - update display name in popup if visible
 }
 
 - (void)deviceBrowserDidEnumerateLocalDevices:(ICDeviceBrowser*)browser {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+#pragma mark -
+#pragma mark DEVICE BROWSER DELEGATE
+
+- (void)didRemoveDevice:(ICDevice*)device {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (device != self.camera)
+        return;
+    // it is personal
+}
+
+- (void)device:(ICDevice*)device didOpenSessionWithError:(NSError*)error {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (error == NULL)
+        return;
+    // it is personal
+}
+
+- (void)deviceDidBecomeReady:(ICDevice*)device {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)deviceDidChangeSharingState:(ICDevice*)device {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)device:(ICDevice*)device didReceiveStatusInformation:(NSDictionary*)status {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)device:(ICDevice*)device didEncounterError:(NSError*)error {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+- (void)device:(ICDevice*)device didReceiveButtonPress:(NSString*)buttonType {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 }
 
