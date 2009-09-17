@@ -14,6 +14,8 @@
 
 @interface CameraObscuraPlugIn()
 @property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
+- (void)_cleanUpDeviceBrowser;
+- (void)_cleanUpCamera;
 @end
 
 @implementation CameraObscuraPlugIn
@@ -59,17 +61,15 @@
 }
 
 - (void)finalize {
-    [self.deviceBrowser stop];
-    self.deviceBrowser.delegate = nil;
-    [_deviceBrowser release];
+    [self _cleanUpDeviceBrowser];
+    [self _cleanUpCamera];
 
 	[super finalize];
 }
 
 - (void)dealloc {
-    [self.deviceBrowser stop];
-    self.deviceBrowser.delegate = nil;
-    [_deviceBrowser release];
+    [self _cleanUpDeviceBrowser];
+    [self _cleanUpCamera];
     
 	[super dealloc];
 }
@@ -162,13 +162,14 @@
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    if (self.camera)
+    if (self.camera || ![device.capabilities containsObject:ICCameraDeviceCanTakePicture])
         return;
 
-    // TODO - for now grab the first and run with it, but we should get picky later
+    // TODO - later, selection should be driven by the ui
     self.camera = (ICCameraDevice*)device;
     self.camera.delegate = self;
     [self.camera requestOpenSession];
+
     NSLog(@"%@", self.camera);
 }
 
@@ -177,7 +178,8 @@
 
     if (device != self.camera)
         return;
-    // it is personal
+
+    [self didRemoveDevice:device]; 
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser deviceDidChangeName:(ICDevice*)device {
@@ -198,15 +200,19 @@
 
     if (device != self.camera)
         return;
-    // it is personal
+
+    [self _cleanUpCamera];
+    // TODO - grab another camera?
 }
 
 - (void)device:(ICDevice*)device didOpenSessionWithError:(NSError*)error {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    if (error == NULL)
+    if (error == NULL || device != self.camera)
         return;
-    // it is personal
+
+    [self _cleanUpCamera];
+    // TODO - go cry in the corner?
 }
 
 - (void)deviceDidBecomeReady:(ICDevice*)device {
@@ -231,6 +237,23 @@
 
 - (void)device:(ICDevice*)device didReceiveButtonPress:(NSString*)buttonType {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+#pragma mark -
+#pragma mark PRIVATE
+
+- (void)_cleanUpDeviceBrowser {
+    [self.deviceBrowser stop];
+    self.deviceBrowser.delegate = nil;
+    [_deviceBrowser release];
+    _deviceBrowser = nil;
+}
+
+- (void)_cleanUpCamera {
+    if (self.camera.hasOpenSession)
+        [self.camera requestCloseSession];
+    self.camera.delegate = nil;
+    self.camera = nil;    
 }
 
 @end
