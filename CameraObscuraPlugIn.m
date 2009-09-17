@@ -134,8 +134,14 @@
     if (!([self didValueForInputKeyChange:@"inputCapture"] && self.inputCapture))
         return YES;
 
-    // TODO - do something of significance
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (!self.camera || !self.camera.hasOpenSession)
+        return YES;
+
+    // TODO - take picture
+    NSLog(@"taking picture on %@", self.camera.name);
+    // [self.camera requestTakePicture];
 
     return YES;
 }
@@ -170,7 +176,7 @@
     self.camera.delegate = self;
     [self.camera requestOpenSession];
 
-    NSLog(@"%@", self.camera);
+    NSLog(@"opening %@", self.camera.name);
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
@@ -201,6 +207,8 @@
     if (device != self.camera)
         return;
 
+    NSLog(@"removed %@", self.camera.name);
+
     [self _cleanUpCamera];
     // TODO - grab another camera?
 }
@@ -211,12 +219,19 @@
     if (error == NULL || device != self.camera)
         return;
 
+    NSLog(@"failed to open %@", self.camera.name);
+
     [self _cleanUpCamera];
     // TODO - go cry in the corner?
 }
 
 - (void)deviceDidBecomeReady:(ICDevice*)device {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (device != self.camera)
+        return;
+
+    NSLog(@"ready %@", self.camera.name);
 }
 
 - (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
