@@ -9,8 +9,19 @@
 #import "CameraObscuraPlugIn.h"
 #import "CameraObscuraPlugInViewController.h"
 
-#define	kQCPlugIn_Name				@"Camera"
-#define	kQCPlugIn_Description		@"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
+#define	kQCPlugIn_Name              @"Camera"
+#define	kQCPlugIn_Description       @"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
+
+
+@interface ICDevice(CameraObscuraAdditions)
+- (BOOL)canTakePictures;
+@end
+@implementation ICDevice(CameraObscuraAdditions)
+- (BOOL)canTakePictures {
+    return [self.capabilities containsObject:ICCameraDeviceCanTakePicture];
+}
+@end
+
 
 @interface CameraObscuraPlugIn()
 @property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
@@ -70,7 +81,7 @@
 - (void)dealloc {
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
-    
+
 	[super dealloc];
 }
 
@@ -168,7 +179,7 @@
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    if (self.camera || ![device.capabilities containsObject:ICCameraDeviceCanTakePicture])
+    if (self.camera || ![device canTakePictures])
         return;
 
     // TODO - later, selection should be driven by the ui
@@ -185,7 +196,7 @@
     if (device != self.camera)
         return;
 
-    [self didRemoveDevice:device]; 
+    [self didRemoveDevice:device];
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser deviceDidChangeName:(ICDevice*)device {
@@ -268,7 +279,7 @@
     if (self.camera.hasOpenSession)
         [self.camera requestCloseSession];
     self.camera.delegate = nil;
-    self.camera = nil;    
+    self.camera = nil;
 }
 
 @end
