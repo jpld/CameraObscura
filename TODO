@@ -1,0 +1,10 @@
+NOW
+- find a camera that supports tethered shooting
+- populate settings popup with connected cameras
+- add camera status to settings
+- actually take a picture and return it as an output
+- investigate result when capture trigger rate higher than provider rate 
+- expose an option to delete picture from the camera
+
+LATER
+- asynchronous execution, done signal
