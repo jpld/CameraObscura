@@ -129,19 +129,16 @@
     */
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (!self.camera || self.camera.hasOpenSession)
+        return;
+
+    NSLog(@"opening %@", self.camera.name);
+    [self.camera requestOpenSession];    
 }
 
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
-    /*
-    Called by Quartz Composer whenever the plug-in instance needs to execute.
-    Only read from the plug-in inputs and produce a result (by writing to the plug-in outputs or rendering to the destination OpenGL context) within that method and nowhere else.
-    Return NO in case of failure during the execution (this will prevent rendering of the current frame to complete).
-
-    The OpenGL context for rendering can be accessed and defined for CGL macros using:
-    CGLContextObj cgl_ctx = [context CGLContextObj];
-    */
-
-    // only act on the rising edge of capture
+    // only act on the rising edge
     if (!([self didValueForInputKeyChange:@"inputCapture"] && self.inputCapture))
         return YES;
 
@@ -163,6 +160,12 @@
     */
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (!self.camera.hasOpenSession)
+        return;
+
+    NSLog(@"closing %@", self.camera.name);
+    [self.camera requestCloseSession];
 }
 
 - (void)stopExecution:(id<QCPlugInContext>)context {
@@ -179,14 +182,20 @@
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    if (self.camera || ![device canTakePictures])
+    if (self.camera)
         return;
+    if (![device canTakePictures]) {
+        NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
+        return;
+    }
 
     // TODO - later, selection should be driven by the ui
     self.camera = (ICCameraDevice*)device;
     self.camera.delegate = self;
+    // TODO - should only open if we are enabled for execution
     [self.camera requestOpenSession];
 
+    NSLog(@"%@", self.camera);
     NSLog(@"opening %@", self.camera.name);
 }
 
