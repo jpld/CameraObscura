@@ -228,10 +228,10 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
     if (self.camera)
         return;
-    // if (![device canTakePictures]) {
-    //     NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
-    //     return;
-    // }
+    if (![device canTakePictures]) {
+        NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
+        return;
+    }
 
     // TODO - later, selection should be driven by the ui
     NSLog(@"%@", device);
