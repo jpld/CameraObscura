@@ -1,1 +1,5 @@
-DOES NOT DO ANYTHING YET.
+DOES NOT PROVIDE IMAGE OUTPUT YET
+
+
+not all cameras are supported, a list of those supported (or at least a subset of) is available at the link below. cameras should be configured to connect via PTP and lots of debug output will be printed to the console to aid in capability discovery.
+  <http://support.apple.com/kb/HT1085>
