@@ -12,6 +12,9 @@
 #define	kQCPlugIn_Name              @"Camera"
 #define	kQCPlugIn_Description       @"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
 
+static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledObservationContext";
+
+
 // WORKAROUND - naming violation for cocoa memory management
 @interface QCPlugIn(CameraObscuraAdditions)
 - (QCPlugInViewController*)createViewController NS_RETURNS_RETAINED;
@@ -28,8 +31,10 @@
 
 
 @interface CameraObscuraPlugIn()
-@property (nonatomic) BOOL isExecutionEnabled;
+@property (nonatomic, getter=isExecutionEnabled) BOOL executionEnabled;
 @property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
+- (void)_setupObservation;
+- (void)_invalidateObservation;
 - (void)_cleanUpDeviceBrowser;
 - (void)_cleanUpCamera;
 @end
@@ -37,7 +42,7 @@
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCapture, outputImage;
-@synthesize isExecutionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
+@synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
 
 + (NSDictionary*)attributes {
 	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
@@ -68,6 +73,8 @@
 - (id)init {
     self = [super init];
 	if (self) {
+        [self _setupObservation];
+
         self.deviceBrowser = [[ICDeviceBrowser alloc] init];
         self.deviceBrowser.delegate = self;
         self.deviceBrowser.browsedDeviceTypeMask = ICDeviceLocationTypeMaskLocal | ICDeviceTypeMaskCamera;
@@ -77,6 +84,8 @@
 }
 
 - (void)finalize {
+    [self _invalidateObservation];
+
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
@@ -84,6 +93,8 @@
 }
 
 - (void)dealloc {
+    [self _invalidateObservation];
+
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
@@ -114,6 +125,21 @@
 	return [[CameraObscuraPlugInViewController alloc] initWithPlugIn:self viewNibName:@"Settings"];
 }
 
+#pragma mark - 
+
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
+    if (context == _COExecutionEnabledObservationContext) {
+        if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
+            NSLog(@"opening %@", self.camera.name);
+            [self.camera requestOpenSession];            
+        } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
+            NSLog(@"closing %@", self.camera.name);
+            [self.camera requestCloseSession];            
+        }        
+    } else
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+}
+
 #pragma mark -
 #pragma mark EXECUTION
 
@@ -125,6 +151,8 @@
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
+    // TODO - start device browser?
+
     return YES;
 }
 
@@ -135,13 +163,7 @@
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    self.isExecutionEnabled = YES;
-
-    if (!self.camera || self.camera.hasOpenSession)
-        return;
-
-    NSLog(@"opening %@", self.camera.name);
-    [self.camera requestOpenSession];    
+    self.executionEnabled = YES;
 }
 
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
@@ -154,7 +176,7 @@
     if (!self.camera || !self.camera.hasOpenSession)
         return YES;
 
-    // TODO - take picture
+    // TODO - need to make sure the device is ready first?
     NSLog(@"taking picture on %@", self.camera.name);
     // [self.camera requestTakePicture];
 
@@ -168,13 +190,7 @@
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    self.isExecutionEnabled = NO;
-
-    if (!self.camera.hasOpenSession)
-        return;
-
-    NSLog(@"closing %@", self.camera.name);
-    [self.camera requestCloseSession];
+    self.executionEnabled = NO;
 }
 
 - (void)stopExecution:(id<QCPlugInContext>)context {
@@ -183,6 +199,8 @@
     */
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    // TODO - stop device browser?
 }
 
 #pragma mark -
@@ -193,18 +211,18 @@
 
     if (self.camera)
         return;
-    if (![device canTakePictures]) {
-        NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
-        return;
-    }
+    // if (![device canTakePictures]) {
+    //     NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
+    //     return;
+    // }
 
     // TODO - later, selection should be driven by the ui
     NSLog(@"%@", device);
     self.camera = (ICCameraDevice*)device;
     self.camera.delegate = self;
     if (self.isExecutionEnabled) {
-        [self.camera requestOpenSession];
         NSLog(@"opening %@", self.camera.name);
+        [self.camera requestOpenSession];
     }
 }
 
@@ -286,6 +304,14 @@
 #pragma mark -
 #pragma mark PRIVATE
 
+- (void)_setupObservation {
+    [self addObserver:self forKeyPath:@"executionEnabled" options:0 context:_COExecutionEnabledObservationContext];
+}
+
+- (void)_invalidateObservation {
+    [self removeObserver:self forKeyPath:@"executionEnabled"];
+}
+
 - (void)_cleanUpDeviceBrowser {
     [self.deviceBrowser stop];
     self.deviceBrowser.delegate = nil;
@@ -294,8 +320,10 @@
 }
 
 - (void)_cleanUpCamera {
-    if (self.camera.hasOpenSession)
+    if (self.camera.hasOpenSession) {
+        NSLog(@"closing %@", self.camera.name);
         [self.camera requestCloseSession];
+    }
     self.camera.delegate = nil;
     self.camera = nil;
 }
