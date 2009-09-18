@@ -11,11 +11,13 @@
 
 @interface CameraObscuraPlugIn : QCPlugIn <ICDeviceBrowserDelegate, ICCameraDeviceDelegate> {
 @private
+    BOOL _isExecutionEnabled;
     ICDeviceBrowser* _deviceBrowser;
     ICCameraDevice* _camera;
 }
 @property (nonatomic) BOOL inputCapture;
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
+
 @property (nonatomic, readonly) ICDeviceBrowser* deviceBrowser;
 @property (nonatomic, retain) ICCameraDevice* camera;
 @end

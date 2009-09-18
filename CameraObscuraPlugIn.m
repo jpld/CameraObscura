@@ -24,6 +24,7 @@
 
 
 @interface CameraObscuraPlugIn()
+@property (nonatomic) BOOL isExecutionEnabled;
 @property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
 - (void)_cleanUpDeviceBrowser;
 - (void)_cleanUpCamera;
@@ -32,7 +33,7 @@
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCapture, outputImage;
-@synthesize deviceBrowser = _deviceBrowser, camera = _camera;
+@synthesize isExecutionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
 
 + (NSDictionary*)attributes {
 	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
@@ -130,6 +131,8 @@
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
+    self.isExecutionEnabled = YES;
+
     if (!self.camera || self.camera.hasOpenSession)
         return;
 
@@ -161,6 +164,8 @@
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
+    self.isExecutionEnabled = NO;
+
     if (!self.camera.hasOpenSession)
         return;
 
@@ -190,13 +195,13 @@
     }
 
     // TODO - later, selection should be driven by the ui
+    NSLog(@"%@", device);
     self.camera = (ICCameraDevice*)device;
     self.camera.delegate = self;
-    // TODO - should only open if we are enabled for execution
-    [self.camera requestOpenSession];
-
-    NSLog(@"%@", self.camera);
-    NSLog(@"opening %@", self.camera.name);
+    if (self.isExecutionEnabled) {
+        [self.camera requestOpenSession];
+        NSLog(@"opening %@", self.camera.name);
+    }
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
