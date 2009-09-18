@@ -13,6 +13,7 @@
 #define	kQCPlugIn_Description       @"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
 
 static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledObservationContext";
+static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 
 // WORKAROUND - naming violation for cocoa memory management
@@ -125,17 +126,33 @@ static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledOb
 	return [[CameraObscuraPlugInViewController alloc] initWithPlugIn:self viewNibName:@"Settings"];
 }
 
-#pragma mark - 
+#pragma mark -
 
 - (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     if (context == _COExecutionEnabledObservationContext) {
         if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
             NSLog(@"opening %@", self.camera.name);
-            [self.camera requestOpenSession];            
+            [self.camera requestOpenSession];
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
             NSLog(@"closing %@", self.camera.name);
-            [self.camera requestCloseSession];            
-        }        
+            [self.camera requestCloseSession];
+        }
+    } else if (context == _COCameraObservationContext) {
+        if (!self.camera)
+            return;
+        if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
+            if (self.camera.hasOpenSession) {
+                NSLog(@"closing %@", self.camera.name);
+                [self.camera requestCloseSession];                
+            }
+            self.camera.delegate = nil;                
+        } else {
+            self.camera.delegate = self;
+            if (self.isExecutionEnabled) {
+                NSLog(@"opening %@", self.camera.name);
+                [self.camera requestOpenSession];
+            }            
+        }
     } else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
@@ -219,11 +236,6 @@ static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledOb
     // TODO - later, selection should be driven by the ui
     NSLog(@"%@", device);
     self.camera = (ICCameraDevice*)device;
-    self.camera.delegate = self;
-    if (self.isExecutionEnabled) {
-        NSLog(@"opening %@", self.camera.name);
-        [self.camera requestOpenSession];
-    }
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
@@ -306,10 +318,12 @@ static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledOb
 
 - (void)_setupObservation {
     [self addObserver:self forKeyPath:@"executionEnabled" options:0 context:_COExecutionEnabledObservationContext];
+    [self addObserver:self forKeyPath:@"camera" options:NSKeyValueObservingOptionPrior context:_COCameraObservationContext];
 }
 
 - (void)_invalidateObservation {
     [self removeObserver:self forKeyPath:@"executionEnabled"];
+    [self removeObserver:self forKeyPath:@"camera"];
 }
 
 - (void)_cleanUpDeviceBrowser {
