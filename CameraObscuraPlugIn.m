@@ -9,8 +9,8 @@
 #import "CameraObscuraPlugIn.h"
 #import "CameraObscuraPlugInViewController.h"
 
-#define	kQCPlugIn_Name              @"Camera"
-#define	kQCPlugIn_Description       @"This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP."
+
+#define COLocalizedString(key, comment) [[NSBundle bundleForClass:[self class]] localizedStringForKey:(key) value:@"" table:(nil)]
 
 static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledObservationContext";
 static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
@@ -46,7 +46,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 @synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
 
 + (NSDictionary*)attributes {
-	return [NSDictionary dictionaryWithObjectsAndKeys:kQCPlugIn_Name, QCPlugInAttributeNameKey, kQCPlugIn_Description, QCPlugInAttributeDescriptionKey, nil];
+	return [NSDictionary dictionaryWithObjectsAndKeys:COLocalizedString(@"kQCPlugIn_Name", NULL), QCPlugInAttributeNameKey, COLocalizedString(@"kQCPlugIn_Description", NULL), QCPlugInAttributeDescriptionKey, nil];
 }
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
@@ -110,6 +110,10 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 	The return object must be nil or a PList compatible i.e. NSString, NSNumber, NSDate, NSData, NSArray or NSDictionary.
 	*/
 
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    // TODO - camera
+
 	return [super serializedValueForKey:key];
 }
 
@@ -118,6 +122,10 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 	Provide deserialization for the plug-in internal settings that were custom serialized in -serializedValueForKey.
 	Deserialize the value, then call [self setValue:value forKey:key] to set the corresponding internal setting of the plug-in instance to that deserialized value.
 	*/
+
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    // TODO - camera
 
 	[super setSerializedValue:serializedValue forKey:key];
 }

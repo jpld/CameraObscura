@@ -5,3 +5,6 @@
    Created by jpld on 19 sept 2009.
    Copyright 2009 __MyCompanyName__. All rights reserved.
  */
+
+"kQCPlugIn_Name" = "Camera";
+"kQCPlugIn_Description" = "This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP.";
