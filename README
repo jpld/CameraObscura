@@ -1,5 +1,6 @@
 DOES NOT PROVIDE IMAGE OUTPUT YET
 
+plug-in executes synchronously on the rising edge of the Capture input signal.
 
-not all cameras are supported, aperture 2+'s supported list (likely to be similar to those supported by this patch) and additional debugging and usage information is available at the link below. currently, lots of debug output is dumped to the console to aid in capability discovery.
+not all cameras support ImageCaptureCore's tethered shooting. aperture 2+'s list of supported cameras is likely to be similar to those supported by this patch. see below for a link to the list which also has additional usage and debugging information. currently, lots of debug output is dumped to the console.
   <http://support.apple.com/kb/HT1085>
