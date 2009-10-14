@@ -197,6 +197,8 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 }
 
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
+    // TODO - assign self.outputImage if downloaded image is available
+
     // only act on the rising edge
     if (!([self didValueForInputKeyChange:@"inputCapture"] && self.inputCapture))
         return YES;
@@ -336,7 +338,8 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
         return;
 
     NSLog(@"downloading image from %@", self.camera.name);
-    // TODO - change from download location to in-memory
+    // TODO - change from download location to in-memory?
+    // - (void)requestReadDataFromFile:(ICCameraFile*)file atOffset:(off_t)offset length:(off_t)length readDelegate:(id)readDelegate didReadDataSelector:(SEL)selector contextInfo:(void*)contextInfo;
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:@"~/Desktop/"], ICDownloadsDirectoryURL, nil];
     // TODO - use setting to determine if the image is removed, check for ICCameraDeviceCanDeleteOneFile
     // if (SOMETHING)
