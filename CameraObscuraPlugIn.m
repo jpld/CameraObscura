@@ -203,7 +203,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
     // TODO - need to make sure the device is ready first?
     NSLog(@"taking picture on %@", self.camera.name);
-    // [self.camera requestTakePicture];
+    [self.camera requestTakePicture];
 
     return YES;
 }
@@ -319,6 +319,18 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 - (void)device:(ICDevice*)device didReceiveButtonPress:(NSString*)buttonType {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+}
+
+#pragma mark -
+#pragma mark DEVICE DELEGATE
+
+- (void)cameraDevice:(ICCameraDevice*)camera didAddItem:(ICCameraItem*)item {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (!UTTypeConformsTo((CFStringRef)(item.UTI), kUTTypeImage))
+        return;
+
+    NSLog(@"new item available on %@", self.camera.name);
 }
 
 #pragma mark -
