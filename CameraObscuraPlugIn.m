@@ -23,10 +23,14 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 @interface ICDevice(CameraObscuraAdditions)
 - (BOOL)canTakePictures;
+- (BOOL)canDeleteOneFile;
 @end
 @implementation ICDevice(CameraObscuraAdditions)
 - (BOOL)canTakePictures {
     return [self.capabilities containsObject:ICCameraDeviceCanTakePicture];
+}
+- (BOOL)canDeleteOneFile {
+    return [self.capabilities containsObject:ICCameraDeviceCanDeleteOneFile];
 }
 @end
 
@@ -377,6 +381,8 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
         NSLog(@"FAILED TO DOWNLOAD IMAGE - %@", error);
         return;
     }
+
+    NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
 }
 
 @end
