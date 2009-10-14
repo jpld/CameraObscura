@@ -38,6 +38,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 - (void)_invalidateObservation;
 - (void)_cleanUpDeviceBrowser;
 - (void)_cleanUpCamera;
+- (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo;
 @end
 
 @implementation CameraObscuraPlugIn
@@ -330,7 +331,14 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     if (!UTTypeConformsTo((CFStringRef)(item.UTI), kUTTypeImage))
         return;
 
-    NSLog(@"new item available on %@", self.camera.name);
+    NSLog(@"downloading image from %@", self.camera.name);
+    // TODO - change from download location to in-memory
+    NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:@"~/Desktop/"], ICDownloadsDirectoryURL, nil];
+    // TODO - use setting to determine if the image is removed, check for ICCameraDeviceCanDeleteOneFile
+    // if (SOMETHING)
+    //     [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
+    [camera requestDownloadFile:(ICCameraFile*)item options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
+    [options release];
 }
 
 #pragma mark -
@@ -360,6 +368,15 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     }
     self.camera.delegate = nil;
     self.camera = nil;
+}
+
+- (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    if (error != NULL) {
+        NSLog(@"FAILED TO DOWNLOAD IMAGE - %@", error);
+        return;
+    }
 }
 
 @end
