@@ -1,10 +1,12 @@
 NOW
-- find a camera that supports tethered shooting
-- populate settings popup with connected cameras
-- add camera status to settings
-- actually take a picture and return it as an output
-- investigate result when capture trigger rate higher than provider rate 
-- expose an option to delete picture from the camera
+[x] find a camera that supports tethered shooting (5D, D50)
+[~] actually take a picture and return as output
+[ ] add camera status to settings
+[ ] populate settings popup with connected cameras
+[ ] investigate result when capture trigger rate higher than provider rate 
+[ ] expose an option to delete picture from the camera, when finished
 
 LATER
-- asynchronous execution, done signal
+[ ] asynchronous execution, done signal
+[ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)
+[ ] provide camera capacity (contentCatalogPercentCompleted)
