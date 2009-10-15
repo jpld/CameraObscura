@@ -43,6 +43,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 - (void)_cleanUpDeviceBrowser;
 - (void)_cleanUpCamera;
 - (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo;
+- (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo;
 @end
 
 @implementation CameraObscuraPlugIn
@@ -338,16 +339,22 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     if (!UTTypeConformsTo((CFStringRef)(item.UTI), kUTTypeImage))
         return;
 
+    ICCameraFile* file = (ICCameraFile*)item;
+
+    // TODO - compare performance / complexity of download vs in-memory read
+#define DOWNLOAD_IAMGE 1
+#if DOWNLOAD_IAMGE
     NSLog(@"downloading image from %@", self.camera.name);
-    // TODO - change from download location to in-memory?
-    // - (void)requestReadDataFromFile:(ICCameraFile*)file atOffset:(off_t)offset length:(off_t)length readDelegate:(id)readDelegate didReadDataSelector:(SEL)selector contextInfo:(void*)contextInfo;
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
-    // TODO - use setting to determine if the image should be removed
-    //  if !camera.canDeleteOneFile need to make other plans 
+    // TODO - use setting to determine if the image should be removed and plan according around !camera.canDeleteOneFile  
     if (camera.canDeleteOneFile && YES)
         [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
-    [camera requestDownloadFile:(ICCameraFile*)item options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
+    [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
     [options release];
+#else
+    NSLog(@"reading image from %@", self.camera.name);
+    [camera requestReadDataFromFile:file atOffset:0 length:file.fileSize readDelegate:self didReadDataSelector:@selector(_didReadData:fromFile:error:contextInfo:) contextInfo:NULL];
+#endif
 }
 
 #pragma mark -
@@ -390,6 +397,29 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     }
 
     NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
+}
+
+- (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo {
+    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    // TODO - handle !self.executionEnabled
+
+    if (error != NULL) {
+        NSLog(@"FAILED TO READ IMAGE - %@", error);
+        return;
+    }
+
+    NSLog(@"read of '%@' complete", file.name);
+
+    // TODO - do something with file.orientation
+    // TODO - do something with returned data!
+
+    // TODO - likely delete original [file.device requestDeleteFiles:[NSArray arrayWithObjects:file, nil]];    
+    // if (file.device.canDeleteOneFile && YES) {
+    //     NSArray* files = [[NSArray alloc] initWithObjects:file];
+    //     [file.device requestDeleteFiles:files];
+    //     [files release];
+    // }
 }
 
 @end
