@@ -342,9 +342,10 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     // TODO - change from download location to in-memory?
     // - (void)requestReadDataFromFile:(ICCameraFile*)file atOffset:(off_t)offset length:(off_t)length readDelegate:(id)readDelegate didReadDataSelector:(SEL)selector contextInfo:(void*)contextInfo;
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
-    // TODO - use setting to determine if the image is removed, check for ICCameraDeviceCanDeleteOneFile
-    // if (SOMETHING)
-    //     [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
+    // TODO - use setting to determine if the image should be removed
+    //  if !camera.canDeleteOneFile need to make other plans 
+    if (camera.canDeleteOneFile && YES)
+        [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
     [camera requestDownloadFile:(ICCameraFile*)item options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
     [options release];
 }
@@ -380,6 +381,8 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 - (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+
+    // TODO - handle !self.executionEnabled
 
     if (error != NULL) {
         NSLog(@"FAILED TO DOWNLOAD IMAGE - %@", error);
