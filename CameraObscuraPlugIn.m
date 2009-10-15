@@ -244,6 +244,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     if (self.camera)
         return;
     if (![device canTakePictures]) {
+        // TODO - change message to include PTP / PC Connection info and link?
         NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
         return;
     }
@@ -340,7 +341,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     NSLog(@"downloading image from %@", self.camera.name);
     // TODO - change from download location to in-memory?
     // - (void)requestReadDataFromFile:(ICCameraFile*)file atOffset:(off_t)offset length:(off_t)length readDelegate:(id)readDelegate didReadDataSelector:(SEL)selector contextInfo:(void*)contextInfo;
-    NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:@"~/Desktop/"], ICDownloadsDirectoryURL, nil];
+    NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
     // TODO - use setting to determine if the image is removed, check for ICCameraDeviceCanDeleteOneFile
     // if (SOMETHING)
     //     [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
