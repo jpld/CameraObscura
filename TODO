@@ -1,13 +1,18 @@
 NOW
 [x] find a camera that supports tethered shooting (5D, D50)
 [~] actually take a picture and return as output
-[ ] done signal on async download/read
+[X] done signal on async download/read
 [ ] populate settings popup with connected cameras
 [ ] add camera status to settings
 [ ] expose an option to delete captured image. default on
 [ ] handle execution stop or disconnect while downloading/reading - device.cancelDownload
-[ ] investigate result when capture trigger rate higher than provider rate 
+[ ] investigate result when capture trigger rate higher than provider rate
+[ ] try operation with two cameras connected, 1 patch
+[ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
+[ ] investigate why first run seems to download all images, is read the same?
+[ ] offer download or read option
 
 LATER
 [ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)
 [ ] provide camera capacity (contentCatalogPercentCompleted)
+[ ] blocking synchronous execution mode
