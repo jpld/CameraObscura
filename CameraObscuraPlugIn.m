@@ -68,7 +68,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 }
 
 + (QCPlugInTimeMode)timeMode {
-	return kQCPlugInTimeModeIdle;
+	return kQCPlugInTimeModeNone;
 }
 
 + (NSArray*)plugInKeys {
@@ -208,6 +208,8 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
     if (!self.camera || !self.camera.hasOpenSession)
         return YES;
+
+    // TODO - could offer a blocking synchronous execution mode
 
     // TODO - need to make sure the device is ready first?
     NSLog(@"taking picture on %@", self.camera.name);
@@ -413,6 +415,11 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
     // TODO - do something with file.orientation
     // TODO - do something with returned data!
+
+    // CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)data);
+    // CGImageRef image = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
+    // CGDataProviderRelease(provider);
+    // CGImageRelease(image);
 
     // TODO - likely delete original [file.device requestDeleteFiles:[NSArray arrayWithObjects:file, nil]];    
     // if (file.device.canDeleteOneFile && YES) {
