@@ -48,7 +48,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 @implementation CameraObscuraPlugIn
 
-@dynamic inputCapture, outputImage;
+@dynamic inputCapture, outputImage, outputDoneSignal;
 @synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
 
 + (NSDictionary*)attributes {
@@ -56,10 +56,13 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 }
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
+    // TODO - localize?
     if ([key isEqualToString:@"inputCapture"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
+    else if ([key isEqualToString:@"outputDoneSignal"])
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Done Signal", QCPortAttributeNameKey, nil];
 	return nil;
 }
 
@@ -167,8 +170,9 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
                 [self.camera requestOpenSession];
             }            
         }
-    } else
+    } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
 
 #pragma mark -
@@ -198,9 +202,15 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 }
 
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
+    // assign outputs
+    if (_captureDoneChanged) {
+        self.outputDoneSignal = _isCaptureDone;
+        _captureDoneChanged = _isCaptureDone;
+        _isCaptureDone = NO;
+    }
     // TODO - assign self.outputImage if downloaded image is available
 
-    // only act on the rising edge
+    // only process input on the rising edge
     if (!([self didValueForInputKeyChange:@"inputCapture"] && self.inputCapture))
         return YES;
 
@@ -347,8 +357,9 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 #define DOWNLOAD_IAMGE 1
 #if DOWNLOAD_IAMGE
     NSLog(@"downloading image from %@", self.camera.name);
+    // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
-    // TODO - use setting to determine if the image should be removed and plan according around !camera.canDeleteOneFile  
+    // TODO - use setting to determine if the image should be removed and plan according around !camera.canDeleteOneFile
     if (camera.canDeleteOneFile && YES)
         [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
     [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
@@ -398,6 +409,9 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
         return;
     }
 
+    _isCaptureDone = YES;
+    _captureDoneChanged = YES;
+
     NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
 }
 
@@ -411,11 +425,13 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
         return;
     }
 
+    _isCaptureDone = YES;
+    _captureDoneChanged = YES;
+
     NSLog(@"read of '%@' complete", file.name);
 
     // TODO - do something with file.orientation
     // TODO - do something with returned data!
-
     // CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)data);
     // CGImageRef image = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
     // CGDataProviderRelease(provider);
