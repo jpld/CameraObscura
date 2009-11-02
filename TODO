@@ -9,10 +9,11 @@ NOW
 [ ] investigate result when capture trigger rate higher than provider rate
 [ ] try operation with two cameras connected, 1 patch
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
-[ ] investigate why first run seems to download all images, is read the same?
+[ ] investigate why first run seems to download all images, is read the same? (D50 only?)
 [ ] offer download or read option
+[X] rename Capture to Capture Signal
 
 LATER
 [ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)
 [ ] provide camera capacity (contentCatalogPercentCompleted)
-[ ] blocking synchronous execution mode
+[ ] offer blocking synchronous execution mode as well

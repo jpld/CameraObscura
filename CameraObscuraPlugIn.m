@@ -58,7 +58,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
     // TODO - localize?
     if ([key isEqualToString:@"inputCapture"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture", QCPortAttributeNameKey, nil];
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture Signal", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputDoneSignal"])
