@@ -48,7 +48,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 @implementation CameraObscuraPlugIn
 
-@dynamic inputCapture, outputImage, outputDoneSignal;
+@dynamic inputCaptureSignal, outputImage, outputDoneSignal;
 @synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
 
 + (NSDictionary*)attributes {
@@ -57,7 +57,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
     // TODO - localize?
-    if ([key isEqualToString:@"inputCapture"])
+    if ([key isEqualToString:@"inputCaptureSignal"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Capture Signal", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
@@ -211,7 +211,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     // TODO - assign self.outputImage if downloaded image is available
 
     // only process input on the rising edge
-    if (!([self didValueForInputKeyChange:@"inputCapture"] && self.inputCapture))
+    if (!([self didValueForInputKeyChange:@"inputCaptureSignal"] && self.inputCaptureSignal))
         return YES;
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));

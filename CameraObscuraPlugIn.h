@@ -17,7 +17,7 @@
     ICDeviceBrowser* _deviceBrowser;
     ICCameraDevice* _camera;
 }
-@property (nonatomic) BOOL inputCapture;
+@property (nonatomic) BOOL inputCaptureSignal;
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
 @property (nonatomic) BOOL outputDoneSignal;
 
