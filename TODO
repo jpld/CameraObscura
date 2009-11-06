@@ -12,6 +12,8 @@ NOW
 [ ] investigate why first run seems to download all images, is read the same? (D50 only?)
 [ ] offer download or read option
 [X] rename Capture to Capture Signal
+[ ] update company stamp in code / plist
+[ ] post v0.1 binary on cloud.github.com and link in README
 
 LATER
 [ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)
