@@ -10,7 +10,6 @@ NOW
 [ ] investigate why first run seems to download all images, is read the same? (D50 only?)
 [ ] offer download or read option
 [ ] update company stamp in code / plist
-[ ] post v0.1 binary on cloud.github.com and link in README
 [ ] create rake task to bundle a release - build, archive with README and example composition
 
 LATER
