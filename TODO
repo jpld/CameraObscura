@@ -1,7 +1,5 @@
 NOW
-[x] find a camera that supports tethered shooting (5D, D50)
 [~] actually take a picture and return as output
-[X] done signal on async download/read
 [ ] populate settings popup with connected cameras
 [ ] add camera status to settings
 [ ] expose an option to delete captured image. default on
@@ -11,9 +9,9 @@ NOW
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
 [ ] investigate why first run seems to download all images, is read the same? (D50 only?)
 [ ] offer download or read option
-[X] rename Capture to Capture Signal
 [ ] update company stamp in code / plist
 [ ] post v0.1 binary on cloud.github.com and link in README
+[ ] create rake task to bundle a release - build, archive with README and example composition
 
 LATER
 [ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)
