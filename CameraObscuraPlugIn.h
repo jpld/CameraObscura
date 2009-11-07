@@ -21,6 +21,6 @@
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
 @property (nonatomic) BOOL outputDoneSignal;
 
-@property (nonatomic, readonly) ICDeviceBrowser* deviceBrowser;
+@property (nonatomic, readonly, assign) ICDeviceBrowser* deviceBrowser;
 @property (nonatomic, retain) ICCameraDevice* camera;
 @end
