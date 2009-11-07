@@ -10,7 +10,7 @@ NOW
 [ ] investigate why first run seems to download all images, is read the same? (D50 only?)
 [ ] offer download or read option
 [ ] update company stamp in code / plist
-[ ] create rake task to bundle a release - build, archive with README and example composition
+[X] create rake task to bundle a release - build, archive with README and example composition
 
 LATER
 [ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)

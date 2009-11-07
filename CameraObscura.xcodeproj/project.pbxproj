@@ -19,6 +19,18 @@
 			name = "Build & Copy";
 			productName = "Build & Install";
 		};
+		D8F350A310A55E2C0019CEF6 /* Build & Create Archive */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D8F350A810A55E590019CEF6 /* Build configuration list for PBXAggregateTarget "Build & Create Archive" */;
+			buildPhases = (
+				D8F350AA10A55E680019CEF6 /* ShellScript */,
+			);
+			dependencies = (
+				D8F350A710A55E3B0019CEF6 /* PBXTargetDependency */,
+			);
+			name = "Build & Create Archive";
+			productName = "Build & Archive";
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -38,6 +50,13 @@
 			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
+			remoteInfo = CameraObscura;
+		};
+		D8F350A610A55E3B0019CEF6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D5B49AC048680CD000E48DA /* CameraObscura */;
 			remoteInfo = CameraObscura;
 		};
 /* End PBXContainerItemProxy section */
@@ -177,6 +196,7 @@
 			targets = (
 				8D5B49AC048680CD000E48DA /* CameraObscura */,
 				233E2C640A83C768005A62DF /* Build & Copy */,
+				D8F350A310A55E2C0019CEF6 /* Build & Create Archive */,
 			);
 		};
 /* End PBXProject section */
@@ -208,6 +228,19 @@
 			shellPath = /bin/sh;
 			shellScript = "# This shell script simply copies the built plug-in to \"~/Library/Graphics/Quartz Composer Plug-Ins\" and overrides any previous version at that location\n\nmkdir -p \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins\"\nrm -rf \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins/CameraObscura.plugin\"\ncp -rf \"$BUILT_PRODUCTS_DIR/CameraObscura.plugin\" \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins/\"\n";
 		};
+		D8F350AA10A55E680019CEF6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rake create_archive build_path=\"$BUILT_PRODUCTS_DIR/CameraObscura.plugin\" version=\"$PRODUCT_VERSION\"";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -227,6 +260,11 @@
 			isa = PBXTargetDependency;
 			target = 8D5B49AC048680CD000E48DA /* CameraObscura */;
 			targetProxy = 233E2C650A83C76D005A62DF /* PBXContainerItemProxy */;
+		};
+		D8F350A710A55E3B0019CEF6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D5B49AC048680CD000E48DA /* CameraObscura */;
+			targetProxy = D8F350A610A55E3B0019CEF6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -347,6 +385,20 @@
 			};
 			name = Release;
 		};
+		D8F350A410A55E2C0019CEF6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "Build & Create Archive";
+			};
+			name = Debug;
+		};
+		D8F350A510A55E2C0019CEF6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "Build & Create Archive";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -373,6 +425,15 @@
 			buildConfigurations = (
 				233E2D8A0A83C7AC005A62DF /* Debug */,
 				233E2D8B0A83C7AC005A62DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D8F350A810A55E590019CEF6 /* Build configuration list for PBXAggregateTarget "Build & Create Archive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8F350A410A55E2C0019CEF6 /* Debug */,
+				D8F350A510A55E2C0019CEF6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
