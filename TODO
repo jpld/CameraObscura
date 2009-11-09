@@ -1,18 +1,33 @@
-NOW
+
+OUTPUT
 [~] actually take a picture and return as output
-[ ] populate settings popup with connected cameras
-[ ] add camera status to settings
-[ ] expose an option to delete captured image. default on
+[ ] redraw image into bitmap context with explicit pixel format, like FastImage
+
+INPUT
+[ ] Save Location for downloaded images when saving originals
+
+EXECUTION
+[ ] offer non-blocking asynchronous and blocking synchronous modes, default to async
+
+UI SETTINGS
+[ ] Save Original toggle, defaults to on
+[ ] Delete Original toggle to delete from camera, default on
+[ ] populate popup with connected cameras
+[ ] add camera status info
+
+GENERAL
 [ ] handle execution stop or disconnect while downloading/reading - device.cancelDownload
-[ ] investigate result when capture trigger rate higher than provider rate
+[ ] serialization of UI settings
+[ ] update company stamp in code / plist
+
+TESTING
+[ ] investigate why first run seems to download all images? (does not repro on 5D, D50 only?)
 [ ] try operation with two cameras connected, 1 patch
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
-[ ] investigate why first run seems to download all images, is read the same? (D50 only?)
-[ ] offer download or read option
-[ ] update company stamp in code / plist
-[X] create rake task to bundle a release - build, archive with README and example composition
+[ ] investigate result when capture trigger rate higher than provider rate
 
 LATER
-[ ] provide camera battery status output (batteryLevelAvailable, batteryLevel)
-[ ] provide camera capacity (contentCatalogPercentCompleted)
-[ ] offer blocking synchronous execution mode as well
+[ ] create camera info patch that publishes camera settings like the below
+[ ] name, can take pictures
+[ ] battery status output (batteryLevelAvailable, batteryLevel)
+[ ] capacity (contentCatalogPercentCompleted)
