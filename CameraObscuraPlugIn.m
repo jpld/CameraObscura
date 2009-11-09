@@ -38,6 +38,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 @interface CameraObscuraPlugIn()
 @property (nonatomic, getter=isExecutionEnabled) BOOL executionEnabled;
 @property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
+@property (nonatomic, retain) id <QCPlugInOutputImageProvider> placeHolderProvider;
 - (void)_setupObservation;
 - (void)_invalidateObservation;
 - (void)_cleanUpDeviceBrowser;
@@ -49,7 +50,14 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCaptureSignal, outputImage, outputDoneSignal;
-@synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera;
+@synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera, placeHolderProvider = _placeHolderProvider;
+
+static void _BufferReleaseCallback(const void* address, void* context) {
+    NSLog(@"_BufferReleaseCallback(const void* address, void* context)");
+    CFDataRef imageData = (CFDataRef)context;
+    NSLog(@"DEBUG retainCount: %d", [(NSObject*)imageData retainCount]);
+    CFRelease(imageData);
+}
 
 + (NSDictionary*)attributes {
 	return [NSDictionary dictionaryWithObjectsAndKeys:COLocalizedString(@"kQCPlugIn_Name", NULL), QCPlugInAttributeNameKey, COLocalizedString(@"kQCPlugIn_Description", NULL), QCPlugInAttributeDescriptionKey, nil];
@@ -99,7 +107,12 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
-	[super finalize];
+    CGImageRelease(_image);
+    if (_imageData)
+        CFRelease(_imageData);
+    [(NSObject*)_placeHolderProvider release];
+
+    [super finalize];
 }
 
 - (void)dealloc {
@@ -108,7 +121,12 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
-	[super dealloc];
+    CGImageRelease(_image);
+    if (_imageData)
+        CFRelease(_imageData);
+    [(NSObject*)_placeHolderProvider release];
+
+    [super dealloc];
 }
 
 #pragma mark -
@@ -202,13 +220,26 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 }
 
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
-    // assign outputs
+    // setup provider and assign output image when new image ready
+    if (_captureDoneChanged && _isCaptureDone) {
+        NSLog(@"creating placeHolderProvider and assigning output image");
+        const UInt8* baseAddress = CFDataGetBytePtr(_imageData);
+        size_t rowBytes = CGImageGetWidth(_image) * 4;
+        self.placeHolderProvider = [context outputImageProviderFromBufferWithPixelFormat:QCPlugInPixelFormatBGRA8 pixelsWide:CGImageGetWidth(_image) pixelsHigh:CGImageGetHeight(_image) baseAddress:baseAddress bytesPerRow:rowBytes releaseCallback:_BufferReleaseCallback releaseContext:(void*)_imageData colorSpace:[context colorSpace] shouldColorMatch:YES];
+        self.outputImage = self.placeHolderProvider;
+
+        // cleanup
+        CGImageRelease(_image);
+        _image = NULL;
+        // NB - if the provider retained its releaseContext argument, _imageData could be released here, instead just reassign the variable later and in _BufferReleaseCallback(), release the address
+    }
+
+    // update capture done signal when changed
     if (_captureDoneChanged) {
         self.outputDoneSignal = _isCaptureDone;
         _captureDoneChanged = _isCaptureDone;
         _isCaptureDone = NO;
     }
-    // TODO - assign self.outputImage if downloaded image is available
 
     // only process input on the rising edge
     if (!([self didValueForInputKeyChange:@"inputCaptureSignal"] && self.inputCaptureSignal))
@@ -413,6 +444,19 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
     _captureDoneChanged = YES;
 
     NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
+
+    //  release of image is not strictly necessary as it should occur in -execute, but...
+    CGImageRelease(_image);
+    // NB - imageData release occurs in _BufferReleaseCallback() via releaseContext argument, reassign variable here.
+    
+    NSURL* downloadsDirectoryURL = [options objectForKey:ICDownloadsDirectoryURL];
+    NSString* filePath =  [[downloadsDirectoryURL path] stringByAppendingPathComponent:[options objectForKey:ICSavedFilename]];
+    NSURL* fileURL = [NSURL fileURLWithPath:filePath];
+    CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)fileURL, NULL);
+    _image = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
+    CFRelease(imageSource);
+    CGDataProviderRef provider = CGImageGetDataProvider(_image);
+    _imageData = CGDataProviderCopyData(provider);
 }
 
 - (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo {
@@ -430,14 +474,19 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
     NSLog(@"read of '%@' complete", file.name);
 
-    // TODO - do something with file.orientation
-    // TODO - do something with returned data!
-    // CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)data);
-    // CGImageRef image = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
-    // CGDataProviderRelease(provider);
-    // CGImageRelease(image);
+    // TODO - do something with file.orientation?
 
-    // TODO - likely delete original [file.device requestDeleteFiles:[NSArray arrayWithObjects:file, nil]];    
+    //  release of image is not strictly necessary as it should occur in -execute, but...
+    CGImageRelease(_image);
+    // NB - imageData release occurs in _BufferReleaseCallback() via releaseContext argument, reassign variable here.
+
+    _imageData = (CFDataRef)[data retain];
+
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData(_imageData);
+    _image = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
+    CGDataProviderRelease(provider);
+
+    // TODO - likely delete original [file.device requestDeleteFiles:[NSArray arrayWithObjects:file, nil]];
     // if (file.device.canDeleteOneFile && YES) {
     //     NSArray* files = [[NSArray alloc] initWithObjects:file];
     //     [file.device requestDeleteFiles:files];

@@ -16,6 +16,10 @@
     BOOL _isExecutionEnabled;
     ICDeviceBrowser* _deviceBrowser;
     ICCameraDevice* _camera;
+
+    CGImageRef _image;
+    CFDataRef _imageData;
+    id<QCPlugInOutputImageProvider> _placeHolderProvider;
 }
 @property (nonatomic) BOOL inputCaptureSignal;
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
