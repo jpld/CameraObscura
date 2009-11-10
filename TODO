@@ -1,7 +1,7 @@
 
 OUTPUT
-[~] actually take a picture and return as output
-[ ] redraw image into bitmap context with explicit pixel format, like FastImage
+[X] actually take a picture and return as output
+[X] redraw image into bitmap context with explicit pixel format, like FastImage
 
 INPUT
 [ ] Save Location for downloaded images when saving originals
@@ -10,24 +10,27 @@ EXECUTION
 [ ] offer non-blocking asynchronous and blocking synchronous modes, default to async
 
 UI SETTINGS
-[ ] Save Original toggle, defaults to on
+[ ] Save Original toggle, defaults on
 [ ] Delete Original toggle to delete from camera, default on
 [ ] populate popup with connected cameras
 [ ] add camera status info
 
 GENERAL
+[ ] make sure the bitmap context backing allocation and release is evenly paired
 [ ] handle execution stop or disconnect while downloading/reading - device.cancelDownload
 [ ] serialization of UI settings
 [ ] update company stamp in code / plist
+[ ] activate deletion and save copy paths in _didReadData:
 
 TESTING
+[ ] compare performance between download and read
 [ ] investigate why first run seems to download all images? (does not repro on 5D, D50 only?)
 [ ] try operation with two cameras connected, 1 patch
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
 [ ] investigate result when capture trigger rate higher than provider rate
 
 LATER
-[ ] create camera info patch that publishes camera settings like the below
-[ ] name, can take pictures
+[ ] create camera info patch that publishes camera settings like that below
+[ ] name, can take pictures, can delete one
 [ ] battery status output (batteryLevelAvailable, batteryLevel)
 [ ] capacity (contentCatalogPercentCompleted)
