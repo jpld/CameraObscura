@@ -17,8 +17,7 @@
     ICDeviceBrowser* _deviceBrowser;
     ICCameraDevice* _camera;
 
-    CGImageRef _image;
-    CFDataRef _imageData;
+    CGImageRef _sourceImage;
     id<QCPlugInOutputImageProvider> _placeHolderProvider;
 }
 @property (nonatomic) BOOL inputCaptureSignal;

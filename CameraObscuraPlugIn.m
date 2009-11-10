@@ -54,9 +54,8 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 static void _BufferReleaseCallback(const void* address, void* context) {
     NSLog(@"_BufferReleaseCallback(const void* address, void* context)");
-    CFDataRef imageData = (CFDataRef)context;
-    NSLog(@"DEBUG retainCount: %d", [(NSObject*)imageData retainCount]);
-    CFRelease(imageData);
+    // release bitmap context backing
+    free((void*)address);
 }
 
 + (NSDictionary*)attributes {
@@ -107,9 +106,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
-    CGImageRelease(_image);
-    if (_imageData)
-        CFRelease(_imageData);
+    CGImageRelease(_sourceImage);
     [(NSObject*)_placeHolderProvider release];
 
     [super finalize];
@@ -121,9 +118,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
-    CGImageRelease(_image);
-    if (_imageData)
-        CFRelease(_imageData);
+    CGImageRelease(_sourceImage);
     [(NSObject*)_placeHolderProvider release];
 
     [super dealloc];
@@ -222,16 +217,38 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
     // setup provider and assign output image when new image ready
     if (_captureDoneChanged && _isCaptureDone) {
-        NSLog(@"creating placeHolderProvider and assigning output image");
-        const UInt8* baseAddress = CFDataGetBytePtr(_imageData);
-        size_t rowBytes = CGImageGetWidth(_image) * 4;
-        self.placeHolderProvider = [context outputImageProviderFromBufferWithPixelFormat:QCPlugInPixelFormatBGRA8 pixelsWide:CGImageGetWidth(_image) pixelsHigh:CGImageGetHeight(_image) baseAddress:baseAddress bytesPerRow:rowBytes releaseCallback:_BufferReleaseCallback releaseContext:(void*)_imageData colorSpace:[context colorSpace] shouldColorMatch:YES];
+        NSLog(@"redrawing image into known pixel format, creating placeHolderProvider and assigning output image");
+
+        // TODO - move this to a separate method and message from _didDownloadFile: and _didReadData:
+        size_t bytesPerRow = CGImageGetWidth(_sourceImage) * 4;
+        if(bytesPerRow % 16)
+            bytesPerRow = ((bytesPerRow / 16) + 1) * 16;
+
+        void* baseAddress = valloc(CGImageGetHeight(_sourceImage) * bytesPerRow);
+        if (baseAddress == NULL) {
+            CGImageRelease(_sourceImage);
+            _sourceImage = NULL;
+            return NO;
+        }
+
+        CGContextRef bitmapContext = CGBitmapContextCreate(baseAddress, CGImageGetWidth(_sourceImage), CGImageGetHeight(_sourceImage), 8, bytesPerRow, [context colorSpace], kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
+        if (bitmapContext == NULL) {
+            free(baseAddress);
+            CGImageRelease(_sourceImage);
+            _sourceImage = NULL;
+            return NO;
+        }
+        CGRect bounds = CGRectMake(0., 0., CGImageGetWidth(_sourceImage), CGImageGetHeight(_sourceImage));
+        CGContextClearRect(bitmapContext, bounds);
+        CGContextDrawImage(bitmapContext, bounds, _sourceImage);
+
+        self.placeHolderProvider = [context outputImageProviderFromBufferWithPixelFormat:QCPlugInPixelFormatBGRA8 pixelsWide:CGImageGetWidth(_sourceImage) pixelsHigh:CGImageGetHeight(_sourceImage) baseAddress:baseAddress bytesPerRow:bytesPerRow releaseCallback:_BufferReleaseCallback releaseContext:NULL colorSpace:[context colorSpace] shouldColorMatch:YES];
         self.outputImage = self.placeHolderProvider;
 
         // cleanup
-        CGImageRelease(_image);
-        _image = NULL;
-        // NB - if the provider retained its releaseContext argument, _imageData could be released here, instead just reassign the variable later and in _BufferReleaseCallback(), release the address
+        CGImageRelease(_sourceImage);
+        _sourceImage = NULL;
+        CGContextRelease(bitmapContext);
     }
 
     // update capture done signal when changed
@@ -385,7 +402,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     ICCameraFile* file = (ICCameraFile*)item;
 
     // TODO - compare performance / complexity of download vs in-memory read
-#define DOWNLOAD_IAMGE 1
+#define DOWNLOAD_IAMGE 0
 #if DOWNLOAD_IAMGE
     NSLog(@"downloading image from %@", self.camera.name);
     // TODO - use input to determine download location
@@ -440,23 +457,19 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         return;
     }
 
-    _isCaptureDone = YES;
-    _captureDoneChanged = YES;
-
     NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
 
-    //  release of image is not strictly necessary as it should occur in -execute, but...
-    CGImageRelease(_image);
-    // NB - imageData release occurs in _BufferReleaseCallback() via releaseContext argument, reassign variable here.
-    
+    CGImageRelease(_sourceImage);
+
     NSURL* downloadsDirectoryURL = [options objectForKey:ICDownloadsDirectoryURL];
     NSString* filePath =  [[downloadsDirectoryURL path] stringByAppendingPathComponent:[options objectForKey:ICSavedFilename]];
     NSURL* fileURL = [NSURL fileURLWithPath:filePath];
     CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)fileURL, NULL);
-    _image = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
+    _sourceImage = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
     CFRelease(imageSource);
-    CGDataProviderRef provider = CGImageGetDataProvider(_image);
-    _imageData = CGDataProviderCopyData(provider);
+
+    _isCaptureDone = YES;
+    _captureDoneChanged = YES;
 }
 
 - (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo {
@@ -469,22 +482,21 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         return;
     }
 
-    _isCaptureDone = YES;
-    _captureDoneChanged = YES;
-
     NSLog(@"read of '%@' complete", file.name);
 
-    // TODO - do something with file.orientation?
+    // TODO - save file to disk when appropriate, separate thread?
+    // NSString* filePath =  [self.saveLocation stringByAppendingPathComponent:file.name];
+    // NSURL* fileURL = [NSURL fileURLWithPath:filePath];
+    // BOOL status = [data writeToURL:fileURL options:nil error:&error];
+    // if (!status)
+    //     NSLog(@"FAILED TO SAVE IMAGE - %@", error);
 
-    //  release of image is not strictly necessary as it should occur in -execute, but...
-    CGImageRelease(_image);
-    // NB - imageData release occurs in _BufferReleaseCallback() via releaseContext argument, reassign variable here.
+    CGImageRelease(_sourceImage);
 
-    _imageData = (CFDataRef)[data retain];
-
-    CGDataProviderRef provider = CGDataProviderCreateWithCFData(_imageData);
-    _image = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData((CFDataRef)data);
+    _sourceImage = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
+
 
     // TODO - likely delete original [file.device requestDeleteFiles:[NSArray arrayWithObjects:file, nil]];
     // if (file.device.canDeleteOneFile && YES) {
@@ -492,6 +504,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     //     [file.device requestDeleteFiles:files];
     //     [files release];
     // }
+
+    _isCaptureDone = YES;
+    _captureDoneChanged = YES;
 }
 
 @end
