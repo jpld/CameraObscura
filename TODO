@@ -16,8 +16,8 @@ UI SETTINGS
 [ ] add camera status info
 
 GENERAL
-[ ] make sure the bitmap context backing allocation and release is evenly paired
-[ ] handle execution stop or disconnect while downloading/reading - device.cancelDownload
+[X] make sure the bitmap context backing allocation and release is evenly paired
+[X] handle execution stop while downloading/reading [device cancelDownload]. doesn't even get that far
 [ ] serialization of UI settings
 [ ] update company stamp in code / plist
 [ ] activate deletion and save copy paths in _didReadData:
@@ -28,6 +28,7 @@ TESTING
 [ ] try operation with two cameras connected, 1 patch
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
 [ ] investigate result when capture trigger rate higher than provider rate
+[ ] test disconnect during download/read 
 
 LATER
 [ ] create camera info patch that publishes camera settings like that below
