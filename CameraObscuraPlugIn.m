@@ -459,6 +459,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
 
+    // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
         NSLog(@"EXECUTION DISABLED BUT NEW IMAGE DOWNLOADED AND POSSIBLY SAVED TO DISK");
         return;
@@ -494,6 +495,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // if (!status)
     //     NSLog(@"FAILED TO SAVE IMAGE - %@", error);
 
+    // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
         NSLog(@"EXECUTION DISABLED BUT NEW IMAGE READ AND POSSIBLY SAVED TO DISK");
         return;
