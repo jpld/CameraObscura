@@ -409,7 +409,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     NSLog(@"downloading image from %@", self.camera.name);
     // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
-    // TODO - use setting to determine if the image should be removed and plan according around !camera.canDeleteOneFile
+    // TODO - use setting to determine if the image should be removed and plan accordingly around !camera.canDeleteOneFile
     if (camera.canDeleteOneFile && YES)
         [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
     [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
@@ -505,13 +505,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     _sourceImage = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
 
-
-    // TODO - likely delete original [file.device requestDeleteFiles:[NSArray arrayWithObjects:file, nil]];
-    // if (file.device.canDeleteOneFile && YES) {
-    //     NSArray* files = [[NSArray alloc] initWithObjects:file];
-    //     [file.device requestDeleteFiles:files];
-    //     [files release];
-    // }
+    // TODO - use setting to determine if the image should be removed and plan accordingly around !file.device.canDeleteOneFile
+    if (file.device.canDeleteOneFile && YES) {
+        NSArray* files = [[NSArray alloc] initWithObjects:file, nil];
+        [file.device requestDeleteFiles:files];
+        [files release];
+    }
 
     _isCaptureDone = YES;
     _captureDoneChanged = YES;
