@@ -107,7 +107,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [self _cleanUpCamera];
 
     CGImageRelease(_sourceImage);
-    [(NSObject*)_placeHolderProvider release];
+    self.placeHolderProvider = nil;
 
     [super finalize];
 }
@@ -119,7 +119,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [self _cleanUpCamera];
 
     CGImageRelease(_sourceImage);
-    [(NSObject*)_placeHolderProvider release];
+    self.placeHolderProvider = nil;
 
     [super dealloc];
 }
@@ -166,6 +166,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
             NSLog(@"closing %@", self.camera.name);
             [self.camera requestCloseSession];
+
+            // cancel any inflight downloads
+            [self.camera cancelDownload];            
+
+            // release bitmap context backing
+            self.placeHolderProvider = nil;
         }
     } else if (context == _COCameraObservationContext) {
         if (!self.camera)
@@ -198,8 +204,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     */
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
-    // TODO - start device browser?
 
     return YES;
 }
@@ -292,8 +296,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     */
 
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
-
-    // TODO - stop device browser?
 }
 
 #pragma mark -
@@ -450,14 +452,17 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    // TODO - handle !self.executionEnabled
-
     if (error != NULL) {
         NSLog(@"FAILED TO DOWNLOAD IMAGE - %@", error);
         return;
     }
 
     NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
+
+    if (!self.executionEnabled) {
+        NSLog(@"EXECUTION DISABLED BUT NEW IMAGE DOWNLOADED AND POSSIBLY SAVED TO DISK");
+        return;
+    }
 
     CGImageRelease(_sourceImage);
 
@@ -475,8 +480,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo {
     NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    // TODO - handle !self.executionEnabled
-
     if (error != NULL) {
         NSLog(@"FAILED TO READ IMAGE - %@", error);
         return;
@@ -490,6 +493,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // BOOL status = [data writeToURL:fileURL options:nil error:&error];
     // if (!status)
     //     NSLog(@"FAILED TO SAVE IMAGE - %@", error);
+
+    if (!self.executionEnabled) {
+        NSLog(@"EXECUTION DISABLED BUT NEW IMAGE READ AND POSSIBLY SAVED TO DISK");
+        return;
+    }
 
     CGImageRelease(_sourceImage);
 
