@@ -27,7 +27,7 @@ TESTING
 [ ] investigate why first run seems to download all images? (does not repro on 5D, D50 only?)
 [ ] try operation with two cameras connected, 1 patch
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
-[ ] investigate result when capture trigger rate higher than provider rate
+[~] investigate result when capture signal rate is high. LFO period < 2, source file deletes fail?
 [ ] test disconnect during download/read 
 
 LATER
