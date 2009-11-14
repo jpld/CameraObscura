@@ -20,7 +20,13 @@ GENERAL
 [X] handle execution stop while downloading/reading [device cancelDownload]. doesn't even get that far
 [ ] serialization of UI settings
 [ ] update company stamp in code / plist
-[ ] activate deletion and save copy paths in _didReadData:
+[~] activate deletion and save copy paths in _didReadData:
+[ ] create custom plugin icns
+[X] add installation information to README
+[ ] rewrite README to have an image/movie
+[ ] look into block-based KVO'ing
+[X] pick a better version numbering system
+[ ] figure out story for valloc/free in GC, fix finalize
 
 TESTING
 [ ] compare performance between download and read
