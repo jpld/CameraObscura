@@ -11,8 +11,12 @@ end
 # invoked by xcode runscript build phase
 desc 'create archive of binary and docs for distribution'
 task :create_archive, [:build_path, :version] do |t, args|
-  # TODO - probably want to put this somewhere else
-  dir_name = "CameraObscura_v#{args.version}"
+  if args.build_path.nil? or args.build_path.empty? or args.version.nil? or args.version.empty?
+    puts "ERROR - missing build path and/or version"
+    return 1
+  end
+
+  dir_name = "CameraObscura-#{args.version}"
   FileUtils.rm_rf(Dir.glob("#{dir_name}/*")) if File.exists? dir_name
   FileUtils.mkdir dir_name unless File.exists? dir_name
 
@@ -21,7 +25,7 @@ task :create_archive, [:build_path, :version] do |t, args|
 
   %x{ zip -r "#{dir_name}.zip" "#{dir_name}" }
 
-  # TODO - open finder window to output location
+  %x{ open "#{dir_name}" }
 end
 
 # desc 'delete archive'
