@@ -106,7 +106,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
 
-    // NB - under GC release is a noop, but the manual valloc/free calls likely need to go through make collectable. until then, this likely doesn't support GC
     CGImageRelease(_sourceImage);
     self.placeHolderProvider = nil;
 

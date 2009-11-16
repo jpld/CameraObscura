@@ -26,7 +26,7 @@ GENERAL
 [ ] rewrite README to have an image/movie
 [ ] look into block-based KVO'ing
 [X] pick a better version numbering system
-[ ] figure out story for valloc/free in GC, fix finalize
+[ ] think about using CFMakeCollectable() for GC
 
 TESTING
 [ ] compare performance between download and read
