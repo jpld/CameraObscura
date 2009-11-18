@@ -9,6 +9,13 @@
 #import "CameraObscuraPlugIn.h"
 #import "CameraObscuraPlugInViewController.h"
 
+#if CONFIGURATION == DEBUG
+    #define CODebugLogSelector() NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd))
+    #define CODebugLog(a...) NSLog(a)
+#else
+    #define CODebugLogSelector()
+    #define CODebugLog(a...)
+#endif
 
 #define COLocalizedString(key, comment) [[NSBundle bundleForClass:[self class]] localizedStringForKey:(key) value:@"" table:(nil)]
 
@@ -53,7 +60,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 @synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera, placeHolderProvider = _placeHolderProvider;
 
 static void _BufferReleaseCallback(const void* address, void* context) {
-    NSLog(@"_BufferReleaseCallback(const void* address, void* context)");
+    CODebugLog(@"_BufferReleaseCallback(const void* address, void* context)");
     // release bitmap context backing
     free((void*)address);
 }
@@ -132,7 +139,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 	The return object must be nil or a PList compatible i.e. NSString, NSNumber, NSDate, NSData, NSArray or NSDictionary.
 	*/
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     // TODO - camera
 
@@ -145,7 +152,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 	Deserialize the value, then call [self setValue:value forKey:key] to set the corresponding internal setting of the plug-in instance to that deserialized value.
 	*/
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     // TODO - camera
 
@@ -161,10 +168,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     if (context == _COExecutionEnabledObservationContext) {
         if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
-            NSLog(@"opening %@", self.camera.name);
+            CODebugLog(@"opening %@", self.camera.name);
             [self.camera requestOpenSession];
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
-            NSLog(@"closing %@", self.camera.name);
+            CODebugLog(@"closing %@", self.camera.name);
             [self.camera requestCloseSession];
 
             // cancel any inflight downloads
@@ -178,14 +185,14 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             return;
         if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
             if (self.camera.hasOpenSession) {
-                NSLog(@"closing %@", self.camera.name);
+                CODebugLog(@"closing %@", self.camera.name);
                 [self.camera requestCloseSession];                
             }
             self.camera.delegate = nil;                
         } else {
             self.camera.delegate = self;
             if (self.isExecutionEnabled) {
-                NSLog(@"opening %@", self.camera.name);
+                CODebugLog(@"opening %@", self.camera.name);
                 [self.camera requestOpenSession];
             }            
         }
@@ -203,7 +210,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     Return NO in case of fatal failure (this will prevent rendering of the composition to start).
     */
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     return YES;
 }
@@ -213,7 +220,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     Called by Quartz Composer when the plug-in instance starts being used by Quartz Composer.
     */
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     self.executionEnabled = YES;
 }
@@ -221,7 +228,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
     // setup provider and assign output image when new image ready
     if (_captureDoneChanged && _isCaptureDone) {
-        NSLog(@"redrawing image into known pixel format, creating placeHolderProvider and assigning output image");
+        CODebugLog(@"redrawing image into known pixel format, creating placeHolderProvider and assigning output image");
 
         // TODO - move this to a separate method and message from _didDownloadFile: and _didReadData:
         size_t bytesPerRow = CGImageGetWidth(_sourceImage) * 4;
@@ -266,7 +273,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if (!([self didValueForInputKeyChange:@"inputCaptureSignal"] && self.inputCaptureSignal))
         return YES;
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (!self.camera || !self.camera.hasOpenSession)
         return YES;
@@ -274,7 +281,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // TODO - could offer a blocking synchronous execution mode
 
     // TODO - need to make sure the device is ready first?
-    NSLog(@"taking picture on %@", self.camera.name);
+    CODebugLog(@"taking picture on %@", self.camera.name);
     [self.camera requestTakePicture];
 
     return YES;
@@ -285,7 +292,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
     */
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     self.executionEnabled = NO;
 }
@@ -295,30 +302,30 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
     */
 
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 #pragma mark -
 #pragma mark DEVICE BROWSER DELEGATE
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (self.camera)
         return;
     if (![device canTakePictures]) {
         // TODO - change message to include PTP / PC Connection info and link?
-        NSLog(@"%@ NOT CAPABLE OF TETHERED SHOOTING", device.name);
+        NSLog(@"%@ not capable of tethered shooting in current configuration", device.name);
         return;
     }
 
     // TODO - later, selection should be driven by the ui
-    NSLog(@"%@", device);
+    CODebugLog(@"%@", device);
     self.camera = (ICCameraDevice*)device;
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (device != self.camera)
         return;
@@ -327,76 +334,76 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser deviceDidChangeName:(ICDevice*)device {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     // TODO - update display name in popup if visible
 }
 
 - (void)deviceBrowserDidEnumerateLocalDevices:(ICDeviceBrowser*)browser {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 #pragma mark -
 #pragma mark DEVICE BROWSER DELEGATE
 
 - (void)didRemoveDevice:(ICDevice*)device {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (device != self.camera)
         return;
 
-    NSLog(@"removed %@", self.camera.name);
+    CODebugLog(@"removed %@", self.camera.name);
 
     [self _cleanUpCamera];
     // TODO - grab another camera?
 }
 
 - (void)device:(ICDevice*)device didOpenSessionWithError:(NSError*)error {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (error == NULL || device != self.camera)
         return;
 
-    NSLog(@"failed to open %@", self.camera.name);
+    NSLog(@"ERROR - failed to open %@", self.camera.name);
 
     [self _cleanUpCamera];
     // TODO - go cry in the corner?
 }
 
 - (void)deviceDidBecomeReady:(ICDevice*)device {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (device != self.camera)
         return;
 
-    NSLog(@"ready %@", self.camera.name);
+    CODebugLog(@"ready %@", self.camera.name);
 }
 
 - (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 - (void)deviceDidChangeSharingState:(ICDevice*)device {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 - (void)device:(ICDevice*)device didReceiveStatusInformation:(NSDictionary*)status {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 - (void)device:(ICDevice*)device didEncounterError:(NSError*)error {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 - (void)device:(ICDevice*)device didReceiveButtonPress:(NSString*)buttonType {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 }
 
 #pragma mark -
 #pragma mark DEVICE DELEGATE
 
 - (void)cameraDevice:(ICCameraDevice*)camera didAddItem:(ICCameraItem*)item {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (!UTTypeConformsTo((CFStringRef)(item.UTI), kUTTypeImage))
         return;
@@ -406,7 +413,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // TODO - compare performance / complexity of download vs in-memory read
 #define DOWNLOAD_IAMGE 0
 #if DOWNLOAD_IAMGE
-    NSLog(@"downloading image from %@", self.camera.name);
+    CODebugLog(@"downloading image from %@", self.camera.name);
     // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
     // TODO - use setting to determine if the image should be removed and plan accordingly around !camera.canDeleteOneFile
@@ -415,7 +422,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
     [options release];
 #else
-    NSLog(@"reading image from %@", self.camera.name);
+    CODebugLog(@"reading image from %@", self.camera.name);
     [camera requestReadDataFromFile:file atOffset:0 length:file.fileSize readDelegate:self didReadDataSelector:@selector(_didReadData:fromFile:error:contextInfo:) contextInfo:NULL];
 #endif
 }
@@ -442,7 +449,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 - (void)_cleanUpCamera {
     if (self.camera.hasOpenSession) {
-        NSLog(@"closing %@", self.camera.name);
+        CODebugLog(@"closing %@", self.camera.name);
         [self.camera requestCloseSession];
     }
     self.camera.delegate = nil;
@@ -450,18 +457,18 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (error != NULL) {
-        NSLog(@"FAILED TO DOWNLOAD IMAGE - %@", error);
+        NSLog(@"ERROR - failed to download image - %@", error);
         return;
     }
 
-    NSLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
+    CODebugLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
 
     // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
-        NSLog(@"EXECUTION DISABLED BUT NEW IMAGE DOWNLOADED AND POSSIBLY SAVED TO DISK");
+        NSLog(@"ERROR - execution disabled but new image downlaoded and possibly saved to disk");
         return;
     }
 
@@ -479,25 +486,25 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    CODebugLogSelector();
 
     if (error != NULL) {
-        NSLog(@"FAILED TO READ IMAGE - %@", error);
+        NSLog(@"ERROR - failed to read image - %@", error);
         return;
     }
 
-    NSLog(@"read of '%@' complete", file.name);
+    CODebugLog(@"read of '%@' complete", file.name);
 
     // TODO - save file to disk when appropriate, separate thread?
     // NSString* filePath =  [self.saveLocation stringByAppendingPathComponent:file.name];
     // NSURL* fileURL = [NSURL fileURLWithPath:filePath];
     // BOOL status = [data writeToURL:fileURL options:nil error:&error];
     // if (!status)
-    //     NSLog(@"FAILED TO SAVE IMAGE - %@", error);
+    //     NSLog(@"ERROR - failed to save image - %@", error);
 
     // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
-        NSLog(@"EXECUTION DISABLED BUT NEW IMAGE READ AND POSSIBLY SAVED TO DISK");
+        NSLog(@"ERROR - execution disabled but new image read and possibly saved to disk");
         return;
     }
 
