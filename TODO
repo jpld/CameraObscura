@@ -27,6 +27,7 @@ GENERAL
 [ ] look into block-based KVO'ing
 [X] pick a better version numbering system
 [ ] think about using CFMakeCollectable() for GC
+[ ] use build configuration to control debug logging 
 
 TESTING
 [ ] compare performance between download and read
