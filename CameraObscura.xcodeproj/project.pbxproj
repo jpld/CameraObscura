@@ -23,7 +23,7 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = D8F350A810A55E590019CEF6 /* Build configuration list for PBXAggregateTarget "Build & Create Archive" */;
 			buildPhases = (
-				D8F350AA10A55E680019CEF6 /* ShellScript */,
+				D8F350AA10A55E680019CEF6 /* Run Rake Task */,
 			);
 			dependencies = (
 				D8F350A710A55E3B0019CEF6 /* PBXTargetDependency */,
@@ -228,13 +228,14 @@
 			shellPath = /bin/sh;
 			shellScript = "# This shell script simply copies the built plug-in to \"~/Library/Graphics/Quartz Composer Plug-Ins\" and overrides any previous version at that location\n\nmkdir -p \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins\"\nrm -rf \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins/CameraObscura.plugin\"\ncp -rf \"$BUILT_PRODUCTS_DIR/CameraObscura.plugin\" \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins/\"\n";
 		};
-		D8F350AA10A55E680019CEF6 /* ShellScript */ = {
+		D8F350AA10A55E680019CEF6 /* Run Rake Task */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Rake Task";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
