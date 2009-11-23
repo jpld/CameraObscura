@@ -97,6 +97,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (id)init {
     self = [super init];
 	if (self) {
+        _deleteImageFromSource = YES;
         [self _setupObservation];
 
         self.deviceBrowser = [[ICDeviceBrowser alloc] init];
@@ -175,7 +176,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             [self.camera requestCloseSession];
 
             // cancel any inflight downloads
-            [self.camera cancelDownload];            
+            [self.camera cancelDownload];
 
             // release bitmap context backing
             self.placeHolderProvider = nil;
@@ -186,15 +187,17 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
             if (self.camera.hasOpenSession) {
                 CODebugLog(@"closing %@", self.camera.name);
-                [self.camera requestCloseSession];                
+                [self.camera requestCloseSession];
             }
-            self.camera.delegate = nil;                
+            self.camera.delegate = nil;
         } else {
             self.camera.delegate = self;
             if (self.isExecutionEnabled) {
                 CODebugLog(@"opening %@", self.camera.name);
                 [self.camera requestOpenSession];
-            }            
+            }
+            if (!self.camera.canDeleteOneFile)
+                NSLog(@"WARNING - unable to remotely delete files from selected camera %@, capture session may be limted to camera's local storage.", self.camera.name);
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -319,7 +322,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         return;
     }
 
-    // TODO - later, selection should be driven by the ui
+    // TODO - selection should be driven by the ui
     CODebugLog(@"%@", device);
     self.camera = (ICCameraDevice*)device;
 }
@@ -416,8 +419,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CODebugLog(@"downloading image from %@", self.camera.name);
     // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
-    // TODO - use setting to determine if the image should be removed and plan accordingly around !camera.canDeleteOneFile
-    if (camera.canDeleteOneFile && YES)
+    // TODO - plan accordingly around !camera.canDeleteOneFile
+    if (_deleteImageFromSource && camera.canDeleteOneFile)
         [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
     [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
     [options release];
@@ -514,8 +517,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     _sourceImage = CGImageCreateWithJPEGDataProvider(provider, NULL, true, kCGRenderingIntentDefault);
     CGDataProviderRelease(provider);
 
-    // TODO - use setting to determine if the image should be removed and plan accordingly around !file.device.canDeleteOneFile
-    if (file.device.canDeleteOneFile && YES) {
+    // TODO - plan accordingly around !camera.canDeleteOneFile
+    if (_deleteImageFromSource && file.device.canDeleteOneFile) {
         NSArray* files = [[NSArray alloc] initWithObjects:file, nil];
         [file.device requestDeleteFiles:files];
         [files release];
