@@ -11,7 +11,7 @@ EXECUTION
 
 UI SETTINGS
 [ ] Save Original toggle, defaults on
-[ ] Delete Original toggle to delete from camera, default on
+[~] Delete Original toggle to delete from camera, default on
 [ ] populate popup with connected cameras
 [ ] add camera status info
 
