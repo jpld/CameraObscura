@@ -7,4 +7,4 @@
  */
 
 "kQCPlugIn_Name" = "Camera";
-"kQCPlugIn_Description" = "This patch captures and returns an image from a tethered camera.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to see if it is recognized. Additionally, if the camera has settings to configure the USB connection, choose PTP.";
+"kQCPlugIn_Description" = "This patch captures and returns an image from a tethered camera.\n\nCapture is performed on the rising edge of the 'Capture Signal' and the 'Done Signal' goes high when the 'Image' output has new data.\n\nNot all cameras support tethered shooting, connect it after the patch has been added to a composition to check recognition status. Additionally, if the camera has settings to configure the USB connection, choose PTP -- failing that, try PC Connection.";
