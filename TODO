@@ -4,14 +4,15 @@ OUTPUT
 [X] redraw image into bitmap context with explicit pixel format, like FastImage
 
 INPUT
-[ ] Save Location for downloaded images when saving originals
+[/] Save Location for downloaded images when saving originals. not to be fixed, see below.
 
 EXECUTION
 [ ] offer non-blocking asynchronous and blocking synchronous modes, default to async
 
 UI SETTINGS
-[-] Save Original toggle, defaults on. not to be fixed - this should instead be done via an image writer patch.
-[~] Delete Original toggle to delete from camera, default on
+[/] Save Original toggle, defaults on. not to be fixed - this should instead be done via an image writer patch.
+[X] Delete Original toggle to delete from camera, default on
+[ ] bind delete original toggle enabled to selected camera capabilities
 [ ] populate popup with connected cameras
 [ ] add camera status info
 
