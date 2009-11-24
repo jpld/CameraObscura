@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="27"/>
+			<integer value="11"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -133,7 +133,7 @@
 											<int key="NSPeriodicInterval">75</int>
 											<object class="NSMenuItem" key="NSMenuItem" id="528987202">
 												<reference key="NSMenu" ref="123265434"/>
-												<string key="NSTitle">None</string>
+												<string key="NSTitle">Devices</string>
 												<string key="NSKeyEquiv"/>
 												<int key="NSKeyEquivModMask">1048576</int>
 												<int key="NSMnemonicLoc">2147483647</int>
@@ -166,18 +166,18 @@
 											<int key="NSArrowPosition">1</int>
 										</object>
 									</object>
-									<object class="NSButton" id="412798946">
+									<object class="NSButton" id="82763165">
 										<reference key="NSNextResponder" ref="946446661"/>
 										<int key="NSvFlags">268</int>
 										<string key="NSFrame">{{15, 11}, {227, 18}}</string>
 										<reference key="NSSuperview" ref="946446661"/>
 										<bool key="NSEnabled">YES</bool>
-										<object class="NSButtonCell" key="NSCell" id="214915245">
-											<int key="NSCellFlags">67239424</int>
+										<object class="NSButtonCell" key="NSCell" id="179184663">
+											<int key="NSCellFlags">-2080244224</int>
 											<int key="NSCellFlags2">131072</int>
 											<string key="NSContents">Delete Image From Camera After Read</string>
 											<reference key="NSSupport" ref="26"/>
-											<reference key="NSControlView" ref="412798946"/>
+											<reference key="NSControlView" ref="82763165"/>
 											<int key="NSButtonFlags">1211912703</int>
 											<int key="NSButtonFlags2">2</int>
 											<object class="NSCustomResource" key="NSNormalImage">
@@ -268,7 +268,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBAccessibilityConnection" key="connection">
 						<string key="label">link</string>
-						<reference key="source" ref="412798946"/>
+						<reference key="source" ref="82763165"/>
 						<reference key="destination" ref="806453259"/>
 					</object>
 					<int key="connectionID">31</int>
@@ -276,10 +276,10 @@
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">value: plugIn.deleteImageFromSource</string>
-						<reference key="source" ref="412798946"/>
+						<reference key="source" ref="82763165"/>
 						<reference key="destination" ref="824655778"/>
 						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="412798946"/>
+							<reference key="NSSource" ref="82763165"/>
 							<reference key="NSDestination" ref="824655778"/>
 							<string key="NSLabel">value: plugIn.deleteImageFromSource</string>
 							<string key="NSBinding">value</string>
@@ -301,9 +301,105 @@
 					<object class="IBAccessibilityConnection" key="connection">
 						<string key="label">link</string>
 						<reference key="source" ref="806453259"/>
-						<reference key="destination" ref="412798946"/>
+						<reference key="destination" ref="82763165"/>
 					</object>
 					<int key="connectionID">38</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">content: plugIn.deviceBrowser.devices</string>
+						<reference key="source" ref="806453259"/>
+						<reference key="destination" ref="824655778"/>
+						<object class="NSNibBindingConnector" key="connector" id="288170811">
+							<reference key="NSSource" ref="806453259"/>
+							<reference key="NSDestination" ref="824655778"/>
+							<string key="NSLabel">content: plugIn.deviceBrowser.devices</string>
+							<string key="NSBinding">content</string>
+							<string key="NSKeyPath">plugIn.deviceBrowser.devices</string>
+							<object class="NSDictionary" key="NSOptions">
+								<bool key="EncodedWithXMLCoder">YES</bool>
+								<object class="NSArray" key="dict.sortedKeys">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<string>NSInsertsNullPlaceholder</string>
+									<string>NSNullPlaceholder</string>
+								</object>
+								<object class="NSMutableArray" key="dict.values">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<boolean value="YES"/>
+									<string>None Available</string>
+								</object>
+							</object>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">61</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">contentValues: plugIn.deviceBrowser.devices.name</string>
+						<reference key="source" ref="806453259"/>
+						<reference key="destination" ref="824655778"/>
+						<object class="NSNibBindingConnector" key="connector" id="468338325">
+							<reference key="NSSource" ref="806453259"/>
+							<reference key="NSDestination" ref="824655778"/>
+							<string key="NSLabel">contentValues: plugIn.deviceBrowser.devices.name</string>
+							<string key="NSBinding">contentValues</string>
+							<string key="NSKeyPath">plugIn.deviceBrowser.devices.name</string>
+							<object class="NSDictionary" key="NSOptions">
+								<bool key="EncodedWithXMLCoder">YES</bool>
+								<object class="NSArray" key="dict.sortedKeys">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<string>NSInsertsNullPlaceholder</string>
+									<string>NSNullPlaceholder</string>
+								</object>
+								<object class="NSMutableArray" key="dict.values">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<boolean value="YES"/>
+									<string>Unknown</string>
+								</object>
+							</object>
+							<reference key="NSPreviousConnector" ref="288170811"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">63</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">enabled: plugIn.camera</string>
+						<reference key="source" ref="82763165"/>
+						<reference key="destination" ref="824655778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="82763165"/>
+							<reference key="NSDestination" ref="824655778"/>
+							<string key="NSLabel">enabled: plugIn.camera</string>
+							<string key="NSBinding">enabled</string>
+							<string key="NSKeyPath">plugIn.camera</string>
+							<object class="NSDictionary" key="NSOptions">
+								<string key="NS.key.0">NSValueTransformerName</string>
+								<string key="NS.object.0">NSIsNotNil</string>
+							</object>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">67</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedObject: plugIn.camera</string>
+						<reference key="source" ref="806453259"/>
+						<reference key="destination" ref="824655778"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="806453259"/>
+							<reference key="NSDestination" ref="824655778"/>
+							<string key="NSLabel">selectedObject: plugIn.camera</string>
+							<string key="NSBinding">selectedObject</string>
+							<string key="NSKeyPath">plugIn.camera</string>
+							<reference key="NSPreviousConnector" ref="468338325"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">69</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -351,7 +447,7 @@
 							<reference ref="659081265"/>
 							<reference ref="806453259"/>
 							<reference ref="190214261"/>
-							<reference ref="412798946"/>
+							<reference ref="82763165"/>
 						</object>
 						<reference key="parent" ref="120929640"/>
 					</object>
@@ -417,17 +513,17 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">27</int>
-						<reference key="object" ref="412798946"/>
+						<reference key="object" ref="82763165"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="214915245"/>
+							<reference ref="179184663"/>
 						</object>
 						<reference key="parent" ref="170465637"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">28</int>
-						<reference key="object" ref="214915245"/>
-						<reference key="parent" ref="412798946"/>
+						<reference key="object" ref="179184663"/>
+						<reference key="parent" ref="82763165"/>
 					</object>
 				</object>
 			</object>
@@ -502,7 +598,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">38</int>
+			<int key="maxID">69</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
