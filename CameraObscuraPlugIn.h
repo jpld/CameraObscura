@@ -14,9 +14,10 @@
     BOOL _isCaptureDone;
     BOOL _captureDoneChanged;
     BOOL _isExecutionEnabled;
-    BOOL _deleteImageFromSource;
     ICDeviceBrowser* _deviceBrowser;
     ICCameraDevice* _camera;
+
+    BOOL _deleteImageFromSource;
 
     CGImageRef _sourceImage;
     id<QCPlugInOutputImageProvider> _placeHolderProvider;
@@ -27,4 +28,6 @@
 
 @property (nonatomic, readonly, assign) ICDeviceBrowser* deviceBrowser;
 @property (nonatomic, retain) ICCameraDevice* camera;
+
+@property (nonatomic) BOOL deleteImageFromSource;
 @end

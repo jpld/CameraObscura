@@ -57,6 +57,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCaptureSignal, outputImage, outputDoneSignal;
+@synthesize deleteImageFromSource = _deleteImageFromSource;
 @synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera, placeHolderProvider = _placeHolderProvider;
 
 static void _BufferReleaseCallback(const void* address, void* context) {
@@ -97,7 +98,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (id)init {
     self = [super init];
 	if (self) {
-        _deleteImageFromSource = YES;
+        self.deleteImageFromSource = YES;
         [self _setupObservation];
 
         self.deviceBrowser = [[ICDeviceBrowser alloc] init];
@@ -144,7 +145,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     id value = nil;
     if ([key isEqualToString:@"deleteImageFromSource"])
-        value = [NSNumber numberWithBool:_deleteImageFromSource];
+        value = [NSNumber numberWithBool:self.deleteImageFromSource];
     else
 	    value = [super serializedValueForKey:key];
     return value;
@@ -160,7 +161,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     // TODO - some sort of camera UID
     if ([key isEqualToString:@"deleteImageFromSource"])
-        _deleteImageFromSource = [serializedValue boolValue];
+        self.deleteImageFromSource = [serializedValue boolValue];
     else
 	    [super setSerializedValue:serializedValue forKey:key];
 }
@@ -425,7 +426,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
     // TODO - plan accordingly around !camera.canDeleteOneFile
-    if (_deleteImageFromSource && camera.canDeleteOneFile)
+    if (self.deleteImageFromSource && camera.canDeleteOneFile)
         [options setObject:[NSNumber numberWithBool:YES] forKey:ICDeleteAfterSuccessfulDownload];
     [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
     [options release];
@@ -523,7 +524,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CGDataProviderRelease(provider);
 
     // TODO - plan accordingly around !camera.canDeleteOneFile
-    if (_deleteImageFromSource && file.device.canDeleteOneFile) {
+    if (self.deleteImageFromSource && file.device.canDeleteOneFile) {
         NSArray* files = [[NSArray alloc] initWithObjects:file, nil];
         [file.device requestDeleteFiles:files];
         [files release];
