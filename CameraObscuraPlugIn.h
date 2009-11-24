@@ -18,6 +18,7 @@
     ICCameraDevice* _camera;
 
     BOOL _deleteImageFromSource;
+    BOOL _saveCopyOfOriginalImage;
 
     CGImageRef _sourceImage;
     id<QCPlugInOutputImageProvider> _placeHolderProvider;
@@ -30,4 +31,5 @@
 @property (nonatomic, retain) ICCameraDevice* camera;
 
 @property (nonatomic) BOOL deleteImageFromSource;
+@property (nonatomic) BOOL saveCopyOfOriginalImage;
 @end

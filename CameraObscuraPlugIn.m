@@ -57,7 +57,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 @implementation CameraObscuraPlugIn
 
 @dynamic inputCaptureSignal, outputImage, outputDoneSignal;
-@synthesize deleteImageFromSource = _deleteImageFromSource;
+@synthesize deleteImageFromSource = _deleteImageFromSource, saveCopyOfOriginalImage = _saveCopyOfOriginalImage;
 @synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera, placeHolderProvider = _placeHolderProvider;
 
 static void _BufferReleaseCallback(const void* address, void* context) {
@@ -90,7 +90,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 + (NSArray*)plugInKeys {
-    return [NSArray arrayWithObjects:@"deleteImageFromSource", nil];
+    return [NSArray arrayWithObjects:@"deleteImageFromSource", @"saveCopyOfOriginalImage", nil];
 }
 
 #pragma mark -
@@ -146,6 +146,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     id value = nil;
     if ([key isEqualToString:@"deleteImageFromSource"])
         value = [NSNumber numberWithBool:self.deleteImageFromSource];
+    else if ([key isEqualToString:@"saveCopyOfOriginalImage"])
+        value = [NSNumber numberWithBool:self.saveCopyOfOriginalImage];
     else
 	    value = [super serializedValueForKey:key];
     return value;
@@ -162,6 +164,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // TODO - some sort of camera UID
     if ([key isEqualToString:@"deleteImageFromSource"])
         self.deleteImageFromSource = [serializedValue boolValue];
+    else if ([key isEqualToString:@"saveCopyOfOriginalImage"])
+        self.saveCopyOfOriginalImage = [serializedValue boolValue];
     else
 	    [super setSerializedValue:serializedValue forKey:key];
 }
@@ -504,12 +508,14 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     CODebugLog(@"read of '%@' complete", file.name);
 
-    // TODO - save file to disk when appropriate, separate thread?
-    // NSString* filePath =  [self.saveLocation stringByAppendingPathComponent:file.name];
-    // NSURL* fileURL = [NSURL fileURLWithPath:filePath];
-    // BOOL status = [data writeToURL:fileURL options:nil error:&error];
-    // if (!status)
-    //     NSLog(@"ERROR - failed to save image - %@", error);
+    // TODO - save on a seprate thread?
+    // if (self.saveCopyOfOriginalImage) {
+    //     NSString* filePath =  [self.saveLocation stringByAppendingPathComponent:file.name];
+    //     NSURL* fileURL = [NSURL fileURLWithPath:filePath];
+    //     BOOL status = [data writeToURL:fileURL options:nil error:&error];
+    //     if (!status)
+    //         NSLog(@"ERROR - failed to save image - %@", error);
+    // }
 
     // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
