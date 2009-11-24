@@ -12,8 +12,8 @@ EXECUTION
 UI SETTINGS
 [/] Save Original toggle, defaults on. not to be fixed - this should instead be done via an image writer patch.
 [X] Delete Original toggle to delete from camera, default on
-[ ] bind delete original toggle enabled to selected camera capabilities
-[ ] populate popup with connected cameras
+[~] bind delete original toggle enabled to selected camera capabilities
+[~] populate popup with connected cameras
 [ ] add camera status info
 
 GENERAL
