@@ -162,7 +162,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     CODebugLogSelector();
 
-    // TODO - some sort of camera UID
+    // TODO - self.camera.UUIDString
     if ([key isEqualToString:@"deleteImageFromSource"])
         self.deleteImageFromSource = [serializedValue boolValue];
     // else if ([key isEqualToString:@"saveCopyOfOriginalImage"])
