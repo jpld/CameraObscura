@@ -202,6 +202,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             }
             self.camera.delegate = nil;
         } else {
+            if (!self.camera.canTakePictures) {
+                NSLog(@"ERROR - %@ not capable of tethered shooting in current configuration", self.camera.name);
+                self.camera = nil;
+                return;
+            }
             self.camera.delegate = self;
             if (self.isExecutionEnabled) {
                 CODebugLog(@"opening %@", self.camera.name);
@@ -327,8 +332,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     if (self.camera)
         return;
-    if (![device canTakePictures]) {
-        // TODO - change message to include PTP / PC Connection info and link?
+    if (!device.canTakePictures) {
         NSLog(@"%@ not capable of tethered shooting in current configuration", device.name);
         return;
     }
