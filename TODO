@@ -10,7 +10,7 @@ EXECUTION
 [ ] offer non-blocking asynchronous and blocking synchronous modes, default to async
 
 UI SETTINGS
-[ ] Save Original toggle, defaults on
+[-] Save Original toggle, defaults on. not to be fixed - this should instead be done via an image writer patch.
 [~] Delete Original toggle to delete from camera, default on
 [ ] populate popup with connected cameras
 [ ] add camera status info
@@ -18,7 +18,7 @@ UI SETTINGS
 GENERAL
 [X] make sure the bitmap context backing allocation and release is evenly paired
 [X] handle execution stop while downloading/reading [device cancelDownload]. doesn't even get that far
-[ ] serialization of UI settings
+[~] serialization of UI settings
 [ ] update company stamp in code / plist
 [~] activate deletion and save copy paths in _didReadData:
 [ ] create custom plugin icns
