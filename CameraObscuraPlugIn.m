@@ -89,7 +89,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 + (NSArray*)plugInKeys {
-    return [NSArray arrayWithObjects:nil];
+    return [NSArray arrayWithObjects:@"deleteImageFromSource", nil];
 }
 
 #pragma mark -
@@ -142,9 +142,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     CODebugLogSelector();
 
-    // TODO - camera
-
-	return [super serializedValueForKey:key];
+    id value = nil;
+    if ([key isEqualToString:@"deleteImageFromSource"])
+        value = [NSNumber numberWithBool:_deleteImageFromSource];
+    else
+	    value = [super serializedValueForKey:key];
+    return value;
 }
 
 - (void)setSerializedValue:(id)serializedValue forKey:(NSString*)key {
@@ -155,9 +158,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     CODebugLogSelector();
 
-    // TODO - camera
-
-	[super setSerializedValue:serializedValue forKey:key];
+    // TODO - some sort of camera UID
+    if ([key isEqualToString:@"deleteImageFromSource"])
+        _deleteImageFromSource = [serializedValue boolValue];
+    else
+	    [super setSerializedValue:serializedValue forKey:key];
 }
 
 - (QCPlugInViewController*)createViewController {
