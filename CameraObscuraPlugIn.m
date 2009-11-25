@@ -203,7 +203,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             self.camera.delegate = nil;
         } else {
             if (!self.camera.canTakePictures) {
-                NSLog(@"ERROR - %@ not capable of tethered shooting in current configuration", self.camera.name);
+                NSLog(@"ERROR - selected capture source %@, not capable of tethered shooting in current configuration", self.camera.name);
                 self.camera = nil;
                 return;
             }
