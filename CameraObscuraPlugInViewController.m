@@ -7,6 +7,14 @@
 //
 
 #import "CameraObscuraPlugInViewController.h"
+#import "CameraObscuraPlugIn.h"
+
+static NSString* _COVCCameraObservationContext = @"_COVCCameraObservationContext";
+
+@interface CameraObscuraPlugInViewController()
+- (void)_setupObservation;
+- (void)_invalidateObservation;
+@end
 
 @implementation CameraObscuraPlugInViewController
 
@@ -15,24 +23,44 @@
 - (id)initWithPlugIn:(QCPlugIn*)plugIn viewNibName:(NSString*)name {
     self = [super initWithPlugIn:plugIn viewNibName:name];
     if (self) {
+        [self _setupObservation];
     }
     return self;
 }
 
-- (void)dealloc {
-    [super dealloc];
+- (void)finalize {
+    [self _invalidateObservation];
+
+    [super finalize];
 }
 
-#pragma mark - 
+- (void)dealloc {
+    [self _invalidateObservation];
 
-- (void)awakeFromNib {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    [super dealloc];
 }
 
 #pragma mark -
 
-- (IBAction)selectedDeviceChanged:(id)sender {
-    NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
+    if (context == _COVCCameraObservationContext) {
+        // TODO - this reactive approach isn't the right way to handle this and it doesn't work on the second assignment
+        // fixup selection, selectedObject doesn't seem to observe the value, so if it doesn't change it, it doesn't take note
+        if ([(CameraObscuraPlugIn*)self.plugIn camera] != self.devicesPopUp.selectedItem.representedObject)
+            [self.devicesPopUp selectItemAtIndex:0];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+#pragma mark -
+
+- (void)_setupObservation {
+    [self.plugIn addObserver:self forKeyPath:@"camera" options:nil context:_COVCCameraObservationContext];
+}
+
+- (void)_invalidateObservation {
+    [self.plugIn removeObserver:self forKeyPath:@"camera"];
 }
 
 @end
