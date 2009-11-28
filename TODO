@@ -13,15 +13,17 @@ UI SETTINGS
 [/] Save Original toggle, defaults on. not to be fixed - this should instead be done via an image writer patch.
 [X] Delete Original toggle to delete from camera, default on
 [X] bind delete original toggle enabled to selected camera capabilities
-[~] populate popup with connected cameras
+[X] populate popup with connected cameras
+[ ] more substantial popup options, enable based on canTakePictures None / --- / Camera 1 / Camera 2
 [ ] add camera status info
 
 GENERAL
 [X] make sure the bitmap context backing allocation and release is evenly paired
 [X] handle execution stop while downloading/reading [device cancelDownload]. doesn't even get that far
 [~] serialization of UI settings
+[ ] archive camera selection
 [ ] update company stamp in code / plist
-[~] activate deletion and save copy paths in _didReadData:
+[X] activate deletion and save copy paths in _didReadData:
 [ ] create custom plugin icns
 [X] add installation information to README
 [ ] rewrite README to have an image/movie
