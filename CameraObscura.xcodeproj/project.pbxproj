@@ -40,6 +40,7 @@
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 		D800D3A0106183EB00213712 /* ImageCaptureCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8572F2E1055B64C002CD93B /* ImageCaptureCore.framework */; };
 		D8572FE81055C7CE002CD93B /* CameraObscuraPlugInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8572FE71055C7CE002CD93B /* CameraObscuraPlugInViewController.m */; };
+		D8BC32CE10C0FA99004C4018 /* ICCameraDevice-COAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D8BC32CD10C0FA99004C4018 /* ICCameraDevice-COAdditions.m */; };
 		D8D550EE10659B6C00ED18CC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D8D550EC10659B6C00ED18CC /* InfoPlist.strings */; };
 		D8D550F110659B7A00ED18CC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D8D550EF10659B7A00ED18CC /* Localizable.strings */; };
 /* End PBXBuildFile section */
@@ -77,6 +78,8 @@
 		D8572FE61055C7CE002CD93B /* CameraObscuraPlugInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraObscuraPlugInViewController.h; sourceTree = "<group>"; };
 		D8572FE71055C7CE002CD93B /* CameraObscuraPlugInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraObscuraPlugInViewController.m; sourceTree = "<group>"; };
 		D876EA4610A3E8B800C458A1 /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
+		D8BC32CC10C0FA99004C4018 /* ICCameraDevice-COAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ICCameraDevice-COAdditions.h"; sourceTree = "<group>"; };
+		D8BC32CD10C0FA99004C4018 /* ICCameraDevice-COAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ICCameraDevice-COAdditions.m"; sourceTree = "<group>"; };
 		D8D1196C10943C6400B91BE0 /* Rakefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Rakefile; sourceTree = "<group>"; };
 		D8D550ED10659B6C00ED18CC /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D8D550F010659B7A00ED18CC /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -137,6 +140,8 @@
 		08FB77AFFE84173DC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D8BC32CC10C0FA99004C4018 /* ICCameraDevice-COAdditions.h */,
+				D8BC32CD10C0FA99004C4018 /* ICCameraDevice-COAdditions.m */,
 				16BA95400A7EB2EB001E4983 /* CameraObscuraPlugIn.h */,
 				16BA95410A7EB2EB001E4983 /* CameraObscuraPlugIn.m */,
 				D8572FE61055C7CE002CD93B /* CameraObscuraPlugInViewController.h */,
@@ -252,6 +257,7 @@
 			files = (
 				16BA95420A7EB2EB001E4983 /* CameraObscuraPlugIn.m in Sources */,
 				D8572FE81055C7CE002CD93B /* CameraObscuraPlugInViewController.m in Sources */,
+				D8BC32CE10C0FA99004C4018 /* ICCameraDevice-COAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
