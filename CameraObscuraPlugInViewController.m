@@ -8,9 +8,11 @@
 
 #import "CameraObscuraPlugInViewController.h"
 #import "CameraObscuraPlugIn.h"
+#import "ICCameraDevice-COAdditions.h"
 
 static NSString* _COVCCameraObservationContext = @"_COVCCameraObservationContext";
 static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationContext";
+
 
 @interface CameraObscuraPlugInViewController()
 - (void)_setupObservation;
@@ -98,8 +100,7 @@ static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationConte
 
     for (ICCameraDevice* camera in plugIn.deviceBrowser.devices) {
         item = [[NSMenuItem alloc] initWithTitle:camera.name action:NULL keyEquivalent:@""];
-        // TODO - move category to separate file
-        // [item setEnabled:camera.canTakePictures];
+        [item setEnabled:camera.canTakePictures];
         // [item setImage:];
         [item setRepresentedObject:camera];
 
