@@ -8,5 +8,14 @@
 
 #import "ICCameraDevice-COAdditions.h"
 
-@implementation ICCameraDevice_COAdditions
+@implementation ICCameraDevice(CameraObscuraAdditions)
+
+- (BOOL)canTakePictures {
+    return [self.capabilities containsObject:ICCameraDeviceCanTakePicture];
+}
+
+- (BOOL)canDeleteOneFile {
+    return [self.capabilities containsObject:ICCameraDeviceCanDeleteOneFile];
+}
+
 @end

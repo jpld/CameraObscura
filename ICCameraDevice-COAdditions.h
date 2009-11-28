@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ImageCaptureCore/ICCameraDevice.h>
 
-@interface ICCameraDevice_COAdditions : NSObject {}
+@interface ICCameraDevice(CameraObscuraAdditions)
+- (BOOL)canTakePictures;
+- (BOOL)canDeleteOneFile;
 @end

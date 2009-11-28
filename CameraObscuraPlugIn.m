@@ -8,6 +8,7 @@
 
 #import "CameraObscuraPlugIn.h"
 #import "CameraObscuraPlugInViewController.h"
+#import "ICCameraDevice-COAdditions.h"
 
 #if CONFIGURATION == DEBUG
     #define CODebugLogSelector() NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd))
@@ -26,19 +27,6 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 // WORKAROUND - naming violation for cocoa memory management
 @interface QCPlugIn(CameraObscuraAdditions)
 - (QCPlugInViewController*)createViewController NS_RETURNS_RETAINED;
-@end
-
-@interface ICDevice(CameraObscuraAdditions)
-- (BOOL)canTakePictures;
-- (BOOL)canDeleteOneFile;
-@end
-@implementation ICDevice(CameraObscuraAdditions)
-- (BOOL)canTakePictures {
-    return [self.capabilities containsObject:ICCameraDeviceCanTakePicture];
-}
-- (BOOL)canDeleteOneFile {
-    return [self.capabilities containsObject:ICCameraDeviceCanDeleteOneFile];
-}
 @end
 
 
@@ -330,16 +318,18 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didAddDevice:(ICDevice*)device moreComing:(BOOL)moreComing {
     CODebugLogSelector();
 
+    // if a camera is already assigned bail, otherwise use the first supported camera
     if (self.camera)
         return;
-    if (!device.canTakePictures) {
+
+    ICCameraDevice* camera = (ICCameraDevice*)device;
+    if (!camera.canTakePictures) {
         NSLog(@"%@ not capable of tethered shooting in current configuration", device.name);
         return;
     }
 
-    // TODO - selection should be driven by the ui
-    CODebugLog(@"%@", device);
-    self.camera = (ICCameraDevice*)device;
+    CODebugLog(@"%@", camera);
+    self.camera = camera;
 }
 
 - (void)deviceBrowser:(ICDeviceBrowser*)browser didRemoveDevice:(ICDevice*)device moreGoing:(BOOL)moreGoing {
