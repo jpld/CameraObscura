@@ -10,10 +10,13 @@
 #import "CameraObscuraPlugIn.h"
 
 static NSString* _COVCCameraObservationContext = @"_COVCCameraObservationContext";
+static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationContext";
 
 @interface CameraObscuraPlugInViewController()
 - (void)_setupObservation;
 - (void)_invalidateObservation;
+- (void)_rebuildPopUpMenu;
+- (void)_setPopUpSelection;
 @end
 
 @implementation CameraObscuraPlugInViewController
@@ -42,12 +45,19 @@ static NSString* _COVCCameraObservationContext = @"_COVCCameraObservationContext
 
 #pragma mark -
 
+- (void)awakeFromNib {
+    [self _rebuildPopUpMenu];
+}
+
+#pragma mark -
+
 - (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     if (context == _COVCCameraObservationContext) {
-        // TODO - this reactive approach isn't the right way to handle this and it doesn't work on the second assignment
-        // fixup selection, selectedObject doesn't seem to observe the value, so if it doesn't change it, it doesn't take note
+        // fixup popup selection when plugIn.camera is assigned from
         if ([(CameraObscuraPlugIn*)self.plugIn camera] != self.devicesPopUp.selectedItem.representedObject)
-            [self.devicesPopUp selectItemAtIndex:0];
+            [self _setPopUpSelection];
+    } else if (context == _COVCDevicesObservationContext) {
+        [self _rebuildPopUpMenu];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -55,12 +65,63 @@ static NSString* _COVCCameraObservationContext = @"_COVCCameraObservationContext
 
 #pragma mark -
 
+- (IBAction)devicesPopUpSelectionChanged:(id)sender {
+    CameraObscuraPlugIn* plugIn = (CameraObscuraPlugIn*)self.plugIn;
+    plugIn.camera = self.devicesPopUp.selectedItem.representedObject;
+}
+
+#pragma mark -
+
 - (void)_setupObservation {
     [self.plugIn addObserver:self forKeyPath:@"camera" options:nil context:_COVCCameraObservationContext];
+    [[(CameraObscuraPlugIn*)self.plugIn deviceBrowser] addObserver:self forKeyPath:@"devices" options:nil context:_COVCDevicesObservationContext];
 }
 
 - (void)_invalidateObservation {
     [self.plugIn removeObserver:self forKeyPath:@"camera"];
+    [[(CameraObscuraPlugIn*)self.plugIn deviceBrowser] removeObserver:self forKeyPath:@"devices"];
+}
+
+- (void)_rebuildPopUpMenu {
+    NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
+    [menu setAutoenablesItems:NO];
+
+    // TODO - localize 'None' item
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"None" action:NULL keyEquivalent:@""];
+    [menu addItem:item];
+    [item release];
+
+    // add a separator if there are items
+    CameraObscuraPlugIn* plugIn = (CameraObscuraPlugIn*)self.plugIn;
+    if (plugIn.deviceBrowser.devices.count > 0)
+        [menu addItem:[NSMenuItem separatorItem]];
+
+    for (ICCameraDevice* camera in plugIn.deviceBrowser.devices) {
+        item = [[NSMenuItem alloc] initWithTitle:camera.name action:NULL keyEquivalent:@""];
+        // TODO - move category to separate file
+        // [item setEnabled:camera.canTakePictures];
+        // [item setImage:];
+        [item setRepresentedObject:camera];
+
+        [menu addItem:item];
+        [item release];
+    }
+
+    [self.devicesPopUp setMenu:menu];
+    [menu release];
+
+    [self _setPopUpSelection];
+}
+
+- (void)_setPopUpSelection {
+    NSMenuItem* selectedItem = nil;
+    for (NSMenuItem* item in self.devicesPopUp.menu.itemArray) {
+        if ([item representedObject] != [(CameraObscuraPlugIn*)self.plugIn camera])
+            continue;
+        selectedItem = item;
+        break;
+    }
+    [self.devicesPopUp selectItem:selectedItem];
 }
 
 @end

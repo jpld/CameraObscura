@@ -11,7 +11,7 @@
 			<string key="NS.object.0">740</string>
 		</object>
 		<array class="NSMutableArray" key="IBDocument.EditedObjectIDs">
-			<integer value="5"/>
+			<integer value="11"/>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -36,35 +36,6 @@
 								<reference key="NSNextResponder" ref="170465637"/>
 								<int key="NSvFlags">256</int>
 								<array class="NSMutableArray" key="NSSubviews">
-									<object class="NSButton" id="659081265">
-										<reference key="NSNextResponder" ref="946446661"/>
-										<int key="NSvFlags">-2147483392</int>
-										<string key="NSFrame">{{16, 34}, {230, 20}}</string>
-										<reference key="NSSuperview" ref="946446661"/>
-										<bool key="NSEnabled">YES</bool>
-										<object class="NSButtonCell" key="NSCell" id="1006917751">
-											<int key="NSCellFlags">67239424</int>
-											<int key="NSCellFlags2">134348800</int>
-											<string key="NSContents">Show Device Settings…</string>
-											<object class="NSFont" key="NSSupport" id="26">
-												<string key="NSName">LucidaGrande</string>
-												<double key="NSSize">11</double>
-												<int key="NSfFlags">3100</int>
-											</object>
-											<reference key="NSControlView" ref="659081265"/>
-											<int key="NSButtonFlags">-2038021889</int>
-											<int key="NSButtonFlags2">32</int>
-											<object class="NSFont" key="NSAlternateImage" id="333553255">
-												<string key="NSName">LucidaGrande</string>
-												<double key="NSSize">11</double>
-												<int key="NSfFlags">16</int>
-											</object>
-											<string key="NSAlternateContents"/>
-											<string key="NSKeyEquivalent"/>
-											<int key="NSPeriodicDelay">400</int>
-											<int key="NSPeriodicInterval">75</int>
-										</object>
-									</object>
 									<object class="NSTextField" id="190214261">
 										<reference key="NSNextResponder" ref="946446661"/>
 										<int key="NSvFlags">256</int>
@@ -75,7 +46,11 @@
 											<int key="NSCellFlags">67239424</int>
 											<int key="NSCellFlags2">272629760</int>
 											<string key="NSContents">Camera Device:</string>
-											<reference key="NSSupport" ref="26"/>
+											<object class="NSFont" key="NSSupport" id="26">
+												<string key="NSName">LucidaGrande</string>
+												<double key="NSSize">11</double>
+												<int key="NSfFlags">3100</int>
+											</object>
 											<reference key="NSControlView" ref="190214261"/>
 											<object class="NSColor" key="NSBackgroundColor">
 												<int key="NSColorSpace">6</int>
@@ -110,7 +85,11 @@
 											<reference key="NSControlView" ref="806453259"/>
 											<int key="NSButtonFlags">109199615</int>
 											<int key="NSButtonFlags2">1</int>
-											<reference key="NSAlternateImage" ref="333553255"/>
+											<object class="NSFont" key="NSAlternateImage" id="333553255">
+												<string key="NSName">LucidaGrande</string>
+												<double key="NSSize">11</double>
+												<int key="NSfFlags">16</int>
+											</object>
 											<string key="NSAlternateContents"/>
 											<object class="NSMutableString" key="NSKeyEquivalent">
 												<characters key="NS.bytes"/>
@@ -275,64 +254,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
-						<string key="label">content: plugIn.deviceBrowser.devices</string>
-						<reference key="source" ref="806453259"/>
-						<reference key="destination" ref="824655778"/>
-						<object class="NSNibBindingConnector" key="connector" id="565316750">
-							<reference key="NSSource" ref="806453259"/>
-							<reference key="NSDestination" ref="824655778"/>
-							<string key="NSLabel">content: plugIn.deviceBrowser.devices</string>
-							<string key="NSBinding">content</string>
-							<string key="NSKeyPath">plugIn.deviceBrowser.devices</string>
-							<dictionary key="NSOptions">
-								<boolean value="YES" key="NSInsertsNullPlaceholder"/>
-								<string key="NSNullPlaceholder">None</string>
-							</dictionary>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">70</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">contentValues: plugIn.deviceBrowser.devices.name</string>
-						<reference key="source" ref="806453259"/>
-						<reference key="destination" ref="824655778"/>
-						<object class="NSNibBindingConnector" key="connector" id="1028586730">
-							<reference key="NSSource" ref="806453259"/>
-							<reference key="NSDestination" ref="824655778"/>
-							<string key="NSLabel">contentValues: plugIn.deviceBrowser.devices.name</string>
-							<string key="NSBinding">contentValues</string>
-							<string key="NSKeyPath">plugIn.deviceBrowser.devices.name</string>
-							<dictionary key="NSOptions">
-								<boolean value="YES" key="NSInsertsNullPlaceholder"/>
-								<string key="NSNullPlaceholder">Unknown</string>
-							</dictionary>
-							<reference key="NSPreviousConnector" ref="565316750"/>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">71</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">selectedObject: plugIn.camera</string>
-						<reference key="source" ref="806453259"/>
-						<reference key="destination" ref="824655778"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="806453259"/>
-							<reference key="NSDestination" ref="824655778"/>
-							<string key="NSLabel">selectedObject: plugIn.camera</string>
-							<string key="NSBinding">selectedObject</string>
-							<string key="NSKeyPath">plugIn.camera</string>
-							<reference key="NSPreviousConnector" ref="1028586730"/>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">72</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
 						<string key="label">enabled: plugIn.camera</string>
 						<reference key="source" ref="216091885"/>
 						<reference key="destination" ref="824655778"/>
@@ -405,6 +326,14 @@
 					</object>
 					<int key="connectionID">88</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">devicesPopUpSelectionChanged:</string>
+						<reference key="source" ref="824655778"/>
+						<reference key="destination" ref="806453259"/>
+					</object>
+					<int key="connectionID">91</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -445,20 +374,11 @@
 						<int key="objectID">11</int>
 						<reference key="object" ref="170465637"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="659081265"/>
 							<reference ref="806453259"/>
 							<reference ref="190214261"/>
 							<reference ref="216091885"/>
 						</array>
 						<reference key="parent" ref="120929640"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">14</int>
-						<reference key="object" ref="659081265"/>
-						<array class="NSMutableArray" key="children">
-							<reference ref="1006917751"/>
-						</array>
-						<reference key="parent" ref="170465637"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">13</int>
@@ -503,11 +423,6 @@
 						<reference key="parent" ref="123265434"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">15</int>
-						<reference key="object" ref="1006917751"/>
-						<reference key="parent" ref="659081265"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">27</int>
 						<reference key="object" ref="216091885"/>
 						<array class="NSMutableArray" key="children">
@@ -530,9 +445,6 @@
 				<boolean value="YES" key="12.ImportedFromIB2"/>
 				<string key="13.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="YES" key="13.ImportedFromIB2"/>
-				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<boolean value="YES" key="14.ImportedFromIB2"/>
-				<string key="15.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="16.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="17.IBEditorWindowLastContentRect">{{435, 791}, {147, 20}}</string>
 				<string key="17.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -551,13 +463,17 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">88</int>
+			<int key="maxID">91</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">CameraObscuraPlugInViewController</string>
 					<string key="superclassName">QCPlugInViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">devicesPopUpSelectionChanged:</string>
+						<string key="NS.object.0">id</string>
+					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<string key="NS.key.0">devicesPopUp</string>
 						<string key="NS.object.0">NSPopUpButton</string>
