@@ -88,7 +88,7 @@ static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationConte
     NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
     [menu setAutoenablesItems:NO];
 
-    // TODO - localize 'None' item
+    // TODO - localize 'None'
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@"None" action:NULL keyEquivalent:@""];
     [menu addItem:item];
     [item release];
@@ -99,9 +99,16 @@ static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationConte
         [menu addItem:[NSMenuItem separatorItem]];
 
     for (ICCameraDevice* camera in plugIn.deviceBrowser.devices) {
-        item = [[NSMenuItem alloc] initWithTitle:camera.name action:NULL keyEquivalent:@""];
+        // TODO - localize 'Unknown'
+        item = [[NSMenuItem alloc] initWithTitle:(camera.name ? camera.name : @"Unknown") action:NULL keyEquivalent:@""];
         [item setEnabled:camera.canTakePictures];
-        // [item setImage:];
+
+        // if (camera.icon) {
+        //     NSImage* image = [[NSImage alloc] initWithCGImage:camera.icon size:NSMakeSize(CGImageGetWidth(camera.icon), CGImageGetHeight(camera.icon))];
+        //     [item setImage:image];
+        //     [image release];
+        // }
+
         [item setRepresentedObject:camera];
 
         [menu addItem:item];
