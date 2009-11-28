@@ -1,4 +1,3 @@
-
 OUTPUT
 [X] actually take a picture and return as output
 [X] redraw image into bitmap context with explicit pixel format, like FastImage
@@ -14,7 +13,7 @@ UI SETTINGS
 [X] Delete Original toggle to delete from camera, default on
 [X] bind delete original toggle enabled to selected camera capabilities
 [X] populate popup with connected cameras
-[ ] more substantial popup options, enable based on canTakePictures None / --- / Camera 1 / Camera 2
+[X] more substantial popup options, enable based on canTakePictures None / --- / Camera 1 / Camera 2
 [ ] add camera status info
 
 GENERAL
