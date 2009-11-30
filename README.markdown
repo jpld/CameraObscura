@@ -2,7 +2,7 @@
 =============
 quartz composer plug-in to trigger capture from a tethered camera. patch acts on the rising edge of the Capture Signal input and provides image output asynchronously, as indicated by the Done Signal.
 
-[Download - CameraObscura_0.3.0.zip](http://cloud.github.com/downloads/jpld/CameraObscura/CameraObscura_0.3.0.zip)
+[Download - CameraObscura-0.3.0.zip](http://cloud.github.com/downloads/jpld/CameraObscura/CameraObscura-0.3.0.zip)
 
 to install from the binary download, move _CameraObscura.plugin_ to _~/Library/Graphics/Quartz Composer Plug-Ins/_, and to install from source, simply build the _Build & Copy_ project target.
 
