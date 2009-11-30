@@ -1,5 +1,10 @@
-v0.2
-image output port provides data!
+v0.3.0 (30 Nov 2009)
+* UI setting to select capture source
+* UI setting to delete image off capture source (when available)
+* limit debug logging to debug builds
 
-v0.1
-initial release
+v0.2.0 (10 Nov 2009)
+* image output port provides data!
+
+v0.1.0 (05 Nov 2009)
+* initial release
