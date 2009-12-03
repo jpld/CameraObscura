@@ -26,10 +26,11 @@ GENERAL
 [ ] create custom plugin icns
 [X] add installation information to README
 [ ] rewrite README to have an image/movie
-[ ] look into block-based KVO'ing
+[/] look into block-based KVO'ing
 [X] pick a better version numbering system
 [ ] think about using CFMakeCollectable() for GC
-[X] use build configuration to control debug logging 
+[X] use build configuration to control debug logging
+[ ] prevent camera being opened multiple times (UI issue), need some sort of opening property to check
 
 TESTING
 [ ] compare performance between download and read
