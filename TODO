@@ -15,6 +15,7 @@ UI SETTINGS
 [X] populate popup with connected cameras
 [X] more substantial popup options, enable based on canTakePictures None / --- / Camera 1 / Camera 2
 [ ] add camera status info
+[ ] catch -[ICDevice deviceDidChangeName:] and push
 
 GENERAL
 [X] make sure the bitmap context backing allocation and release is evenly paired
@@ -35,7 +36,7 @@ GENERAL
 TESTING
 [ ] compare performance between download and read
 [ ] investigate why first run seems to download all images? (does not repro on 5D, D50 only?)
-[ ] try operation with two cameras connected, 1 patch
+[x] try operation with two cameras connected, 1 patch
 [ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
 [~] investigate result when capture signal rate is high. LFO period < 2, source file deletes fail?
 [ ] test disconnect during download/read 
