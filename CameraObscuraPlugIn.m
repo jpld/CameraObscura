@@ -11,7 +11,7 @@
 #import "ICCameraDevice-COAdditions.h"
 
 #if CONFIGURATION == DEBUG
-    #define CODebugLogSelector() NSLog(@"-[%@ %@]", NSStringFromClass([self class]), NSStringFromSelector(_cmd))
+    #define CODebugLogSelector() NSLog(@"-[%@ %@]", /*NSStringFromClass([self class])*/self, NSStringFromSelector(_cmd))
     #define CODebugLog(a...) NSLog(a)
 #else
     #define CODebugLogSelector()
@@ -168,10 +168,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     if (context == _COExecutionEnabledObservationContext) {
         if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
-            CODebugLog(@"opening %@", self.camera.name);
+            CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
             [self.camera requestOpenSession];
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
-            CODebugLog(@"closing %@", self.camera.name);
+            CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
             [self.camera requestCloseSession];
 
             // cancel any inflight downloads
@@ -185,23 +185,23 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             return;
         if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
             if (self.camera.hasOpenSession) {
-                CODebugLog(@"closing %@", self.camera.name);
+                CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
                 [self.camera requestCloseSession];
             }
             self.camera.delegate = nil;
         } else {
             if (!self.camera.canTakePictures) {
-                NSLog(@"ERROR - selected capture source %@, not capable of tethered shooting in current configuration", self.camera.name);
+                NSLog(@"ERROR - %@ selected capture source '%@', not capable of tethered shooting in current configuration", self, self.camera.name);
                 self.camera = nil;
                 return;
             }
             self.camera.delegate = self;
             if (self.isExecutionEnabled) {
-                CODebugLog(@"opening %@", self.camera.name);
+                CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
                 [self.camera requestOpenSession];
             }
             if (!self.camera.canDeleteOneFile)
-                NSLog(@"WARNING - unable to remotely delete files from selected camera %@, capture session may be limted to camera's local storage.", self.camera.name);
+                NSLog(@"WARNING - %@ unable to remotely delete files from selected camera '%@', capture session may be limted to camera's local storage.", self, self.camera.name);
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -235,7 +235,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (BOOL)execute:(id<QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
     // setup provider and assign output image when new image ready
     if (_captureDoneChanged && _isCaptureDone) {
-        CODebugLog(@"redrawing image into known pixel format, creating placeHolderProvider and assigning output image");
+        CODebugLog(@"%@ redrawing image into known pixel format, creating placeHolderProvider and assigning output image", self);
 
         // TODO - move this to a separate method and message from _didDownloadFile: and _didReadData:
         size_t bytesPerRow = CGImageGetWidth(_sourceImage) * 4;
@@ -288,7 +288,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // TODO - could offer a blocking synchronous execution mode
 
     // TODO - need to make sure the device is ready first?
-    CODebugLog(@"taking picture on %@", self.camera.name);
+    CODebugLog(@"%@ taking picture on '%@'", self, self.camera.name);
     [self.camera requestTakePicture];
 
     return YES;
@@ -324,11 +324,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     ICCameraDevice* camera = (ICCameraDevice*)device;
     if (!camera.canTakePictures) {
-        NSLog(@"%@ not capable of tethered shooting in current configuration", device.name);
+        NSLog(@"NOTICE - %@ device '%@' not capable of tethered shooting in current configuration", self, device.name);
         return;
     }
 
-    CODebugLog(@"%@", camera);
+    CODebugLog(@"%@ %@", self, camera);
     self.camera = camera;
 }
 
@@ -360,7 +360,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if (device != self.camera)
         return;
 
-    CODebugLog(@"removed %@", self.camera.name);
+    CODebugLog(@"%@ removed '%@'", self, self.camera.name);
 
     [self _cleanUpCamera];
     // TODO - grab another camera?
@@ -372,7 +372,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if (error == NULL || device != self.camera)
         return;
 
-    NSLog(@"ERROR - failed to open %@", self.camera.name);
+    NSLog(@"ERROR - %@ failed to open '%@'", self, self.camera.name);
 
     [self _cleanUpCamera];
     // TODO - go cry in the corner?
@@ -384,7 +384,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if (device != self.camera)
         return;
 
-    CODebugLog(@"ready %@", self.camera.name);
+    CODebugLog(@"%@ ready '%@'", self, self.camera.name);
 }
 
 - (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
@@ -421,7 +421,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     // TODO - compare performance / complexity of download vs in-memory read
 #define DOWNLOAD_IAMGE 0
 #if DOWNLOAD_IAMGE
-    CODebugLog(@"downloading image from %@", self.camera.name);
+    CODebugLog(@"%@ downloading image from '%@'", self, self.camera.name);
     // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
     // TODO - plan accordingly around !camera.canDeleteOneFile
@@ -430,7 +430,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [camera requestDownloadFile:file options:options downloadDelegate:self didDownloadSelector:@selector(_didDownloadFile:error:options:contextInfo:) contextInfo:NULL];
     [options release];
 #else
-    CODebugLog(@"reading image from %@", self.camera.name);
+    CODebugLog(@"%@ reading image from '%@'", self, self.camera.name);
     [camera requestReadDataFromFile:file atOffset:0 length:file.fileSize readDelegate:self didReadDataSelector:@selector(_didReadData:fromFile:error:contextInfo:) contextInfo:NULL];
 #endif
 }
@@ -457,7 +457,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 - (void)_cleanUpCamera {
     if (self.camera.hasOpenSession) {
-        CODebugLog(@"closing %@", self.camera.name);
+        CODebugLog(@"%@ closing '%@'", self, self.camera.name);
         [self.camera requestCloseSession];
     }
     self.camera.delegate = nil;
@@ -468,15 +468,15 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CODebugLogSelector();
 
     if (error != NULL) {
-        NSLog(@"ERROR - failed to download image - %@", error);
+        NSLog(@"ERROR - %@ failed to download image - %@.", self, error);
         return;
     }
 
-    CODebugLog(@"download of '%@' complete", [options objectForKey:ICSavedFilename]);
+    CODebugLog(@"%@ download of '%@' complete", self, [options objectForKey:ICSavedFilename]);
 
     // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
-        NSLog(@"ERROR - execution disabled but new image downlaoded and possibly saved to disk");
+        NSLog(@"ERROR - %@ execution disabled but new image downlaoded and possibly saved to disk", self);
         return;
     }
 
@@ -497,11 +497,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CODebugLogSelector();
 
     if (error != NULL) {
-        NSLog(@"ERROR - failed to read image - %@", error);
+        NSLog(@"ERROR - %@ failed to read image - %@", self, error);
         return;
     }
 
-    CODebugLog(@"read of '%@' complete", file.name);
+    CODebugLog(@"%@ read of '%@' complete", self, file.name);
 
     // TODO - save on a seprate thread? [self performSelectorInBackground:@selector(_writeImageData:) withObject:data];
     // if (self.saveCopyOfOriginalImage) {
@@ -509,12 +509,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     //     NSURL* fileURL = [NSURL fileURLWithPath:filePath];
     //     BOOL status = [data writeToURL:fileURL options:nil error:&error];
     //     if (!status)
-    //         NSLog(@"ERROR - failed to save image - %@", error);
+    //         NSLog(@"ERROR - %@ failed to save image - %@", self, error);
     // }
 
     // NB - this should never occur, the KVO on executionEnabled should close the session immediately
     if (!self.executionEnabled) {
-        NSLog(@"ERROR - execution disabled but new image read and possibly saved to disk");
+        NSLog(@"ERROR - %@ execution disabled but new image read and possibly saved to disk", self);
         return;
     }
 
