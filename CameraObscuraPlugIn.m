@@ -352,7 +352,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 #pragma mark -
-#pragma mark DEVICE BROWSER DELEGATE
+#pragma mark DEVICE DELEGATE
 
 - (void)didRemoveDevice:(ICDevice*)device {
     CODebugLogSelector();
