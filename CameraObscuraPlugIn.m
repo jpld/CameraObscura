@@ -171,10 +171,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
             CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
             [self.camera requestOpenSession];
+            // open session request timeout of 1 sec
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1LL * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
                 if (_openSessionSucceeded)
                     return;
-                NSLog(@"ERROR - %@ failed to open session on '%@'", self, self.camera.name);
+                NSLog(@"NOTICE - %@ failed to open session on '%@'", self, self.camera.name);
                 self.camera = [self _nextAvailableCamera];
             });
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
@@ -208,10 +209,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             if (self.isExecutionEnabled) {
                 CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
                 [self.camera requestOpenSession];
+                // open session request timeout of 1 sec
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1LL * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
                     if (_openSessionSucceeded)
                         return;
-                    NSLog(@"ERROR - %@ failed to open session on '%@'", self, self.camera.name);
+                    NSLog(@"NOTICE - %@ failed to open session on '%@'", self, self.camera.name);
                     self.camera = [self _nextAvailableCamera];
                 });
             }
