@@ -40,6 +40,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 - (void)_cleanUpCamera;
 - (void)_didDownloadFile:(ICCameraFile*)file error:(NSError*)error options:(NSDictionary*)options contextInfo:(void*)contextInfo;
 - (void)_didReadData:(NSData*)data fromFile:(ICCameraFile*)file error:(NSError*)error contextInfo:(void*)contextInfo;
+- (ICCameraDevice*)_nextAvailableCamera;
 @end
 
 @implementation CameraObscuraPlugIn
@@ -174,13 +175,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
                 if (_openSessionSucceeded)
                     return;
                 NSLog(@"ERROR - %@ failed to open session on '%@'", self, self.camera.name);
-                ICCameraDevice* camera = nil;
-                for (camera in self.deviceBrowser.devices) {
-                    if (camera.hasOpenSession || !camera.canTakePictures)
-                        continue;
-                    break;
-                }
-                self.camera = camera;
+                self.camera = [self _nextAvailableCamera];
             });
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
             CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
@@ -217,13 +212,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
                     if (_openSessionSucceeded)
                         return;
                     NSLog(@"ERROR - %@ failed to open session on '%@'", self, self.camera.name);
-                    ICCameraDevice* camera = nil;
-                    for (camera in self.deviceBrowser.devices) {
-                        if (camera.hasOpenSession || !camera.canTakePictures)
-                            continue;
-                        break;
-                    }
-                    self.camera = camera;
+                    self.camera = [self _nextAvailableCamera];
                 });
             }
             if (!self.camera.canDeleteOneFile)
@@ -562,6 +551,18 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     _isCaptureDone = YES;
     _captureDoneChanged = YES;
+}
+
+- (ICCameraDevice*)_nextAvailableCamera {
+    ICCameraDevice* camera = nil;
+    // NB - this could exclude some devices should that be necessary
+    for (ICCameraDevice* c in self.deviceBrowser.devices) {
+        if (c.hasOpenSession || !c.canTakePictures)
+            continue;
+        camera = c;
+        break;
+    }
+    return camera;
 }
 
 @end
