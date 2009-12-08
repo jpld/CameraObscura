@@ -21,7 +21,7 @@ GENERAL
 [X] make sure the bitmap context backing allocation and release is evenly paired
 [X] handle execution stop while downloading/reading [device cancelDownload]. doesn't even get that far
 [~] serialization of UI settings
-[ ] archive camera selection
+[ ] serialize camera selection
 [ ] update company stamp in code / plist
 [X] activate deletion and save copy paths in _didReadData:
 [ ] create custom plugin icns
@@ -31,13 +31,13 @@ GENERAL
 [X] pick a better version numbering system
 [ ] think about using CFMakeCollectable() for GC
 [X] use build configuration to control debug logging
-[ ] prevent camera being opened multiple times (UI issue), need some sort of opening property to check
+[X] prevent camera being opened multiple times (UI issue)
 
 TESTING
 [ ] compare performance between download and read
 [ ] investigate why first run seems to download all images? (does not repro on 5D, D50 only?)
 [x] try operation with two cameras connected, 1 patch
-[ ] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
+[X] try operation with two cameras connected, 2 patches - try 2:1 and 2x 1:1
 [~] investigate result when capture signal rate is high. LFO period < 2, source file deletes fail?
 [ ] test disconnect during download/read 
 
