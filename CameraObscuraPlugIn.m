@@ -170,9 +170,22 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
             CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
             [self.camera requestOpenSession];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1LL * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
+                if (_openSessionSucceeded)
+                    return;
+                NSLog(@"ERROR - %@ failed to open session on '%@'", self, self.camera.name);
+                ICCameraDevice* camera = nil;
+                for (camera in self.deviceBrowser.devices) {
+                    if (camera.hasOpenSession || !camera.canTakePictures)
+                        continue;
+                    break;
+                }
+                self.camera = camera;
+            });
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
             CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
             [self.camera requestCloseSession];
+            _openSessionSucceeded = NO;
 
             // cancel any inflight downloads
             [self.camera cancelDownload];
@@ -184,9 +197,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         if (!self.camera)
             return;
         if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
-            if (self.camera.hasOpenSession) {
+            if (_openSessionSucceeded && self.camera.hasOpenSession) {
                 CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
                 [self.camera requestCloseSession];
+                _openSessionSucceeded = NO;
             }
             self.camera.delegate = nil;
         } else {
@@ -199,6 +213,18 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             if (self.isExecutionEnabled) {
                 CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
                 [self.camera requestOpenSession];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1LL * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
+                    if (_openSessionSucceeded)
+                        return;
+                    NSLog(@"ERROR - %@ failed to open session on '%@'", self, self.camera.name);
+                    ICCameraDevice* camera = nil;
+                    for (camera in self.deviceBrowser.devices) {
+                        if (camera.hasOpenSession || !camera.canTakePictures)
+                            continue;
+                        break;
+                    }
+                    self.camera = camera;
+                });
             }
             if (!self.camera.canDeleteOneFile)
                 NSLog(@"WARNING - %@ unable to remotely delete files from selected camera '%@', capture session may be limted to camera's local storage.", self, self.camera.name);
@@ -369,8 +395,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)device:(ICDevice*)device didOpenSessionWithError:(NSError*)error {
     CODebugLogSelector();
 
-    if (error == NULL || device != self.camera)
+    if (error == NULL || device != self.camera) {
+        _openSessionSucceeded = YES;
         return;
+    }
 
     NSLog(@"ERROR - %@ failed to open '%@'", self, self.camera.name);
 
@@ -408,7 +436,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 #pragma mark -
-#pragma mark DEVICE DELEGATE
+#pragma mark CAMERA DELEGATE
 
 - (void)cameraDevice:(ICCameraDevice*)camera didAddItem:(ICCameraItem*)item {
     CODebugLogSelector();
@@ -419,8 +447,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     ICCameraFile* file = (ICCameraFile*)item;
 
     // TODO - compare performance / complexity of download vs in-memory read
-#define DOWNLOAD_IAMGE 0
-#if DOWNLOAD_IAMGE
+#define DOWNLOAD_IMAGE 0
+#if DOWNLOAD_IMAGE
     CODebugLog(@"%@ downloading image from '%@'", self, self.camera.name);
     // TODO - use input to determine download location
     NSMutableDictionary* options = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSURL fileURLWithPath:[@"~/Desktop/" stringByExpandingTildeInPath]], ICDownloadsDirectoryURL, nil];
@@ -459,6 +487,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if (self.camera.hasOpenSession) {
         CODebugLog(@"%@ closing '%@'", self, self.camera.name);
         [self.camera requestCloseSession];
+        _openSessionSucceeded = NO;
     }
     self.camera.delegate = nil;
     self.camera = nil;

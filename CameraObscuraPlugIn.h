@@ -14,6 +14,7 @@
     BOOL _isCaptureDone;
     BOOL _captureDoneChanged;
     BOOL _isExecutionEnabled;
+    BOOL _openSessionSucceeded;
     ICDeviceBrowser* _deviceBrowser;
     ICCameraDevice* _camera;
 
