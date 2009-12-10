@@ -80,6 +80,7 @@
 		D876EA4610A3E8B800C458A1 /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		D8BC32CC10C0FA99004C4018 /* ICCameraDevice-COAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ICCameraDevice-COAdditions.h"; sourceTree = "<group>"; };
 		D8BC32CD10C0FA99004C4018 /* ICCameraDevice-COAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ICCameraDevice-COAdditions.m"; sourceTree = "<group>"; };
+		D8BEA1CB10D0BCE8006F5EFF /* MultiCam Capture.qtz */ = {isa = PBXFileReference; lastKnownFileType = "video.quartz-composer"; path = "MultiCam Capture.qtz"; sourceTree = "<group>"; };
 		D8D1196C10943C6400B91BE0 /* Rakefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Rakefile; sourceTree = "<group>"; };
 		D8D550ED10659B6C00ED18CC /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D8D550F010659B7A00ED18CC /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -129,6 +130,7 @@
 				D876EA4610A3E8B800C458A1 /* CHANGELOG */,
 				D8D1196C10943C6400B91BE0 /* Rakefile */,
 				D800D3661061668A00213712 /* Camera Capture.qtz */,
+				D8BEA1CB10D0BCE8006F5EFF /* MultiCam Capture.qtz */,
 				7238D5500DB6988600E9A42D /* Settings.xib */,
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 				D8D550EC10659B6C00ED18CC /* InfoPlist.strings */,
