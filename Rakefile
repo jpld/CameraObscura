@@ -21,7 +21,7 @@ task :create_archive, [:build_path, :version] do |t, args|
   FileUtils.mkdir dir_name unless File.exists? dir_name
 
   FileUtils.cp_r args.build_path, dir_name
-  FileUtils.cp %w(README.markdown TODO CHANGELOG Camera\ Capture.qtz), dir_name
+  FileUtils.cp %w(README.markdown TODO CHANGELOG Camera\ Capture.qtz MultiCam\ Capture.qtz), dir_name
 
   %x{ zip -r "#{dir_name}.zip" "#{dir_name}" }
 
