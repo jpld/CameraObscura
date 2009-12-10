@@ -1,3 +1,7 @@
+v0.3.1 (03 dec 2009)
+* harden usage of multiple plug-in instances
+* add MultiCam example composition
+
 v0.3.0 (30 Nov 2009)
 * UI setting to select capture source
 * UI setting to delete image off capture source (when available)
