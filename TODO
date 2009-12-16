@@ -32,6 +32,7 @@ GENERAL
 [ ] think about using CFMakeCollectable() for GC
 [X] use build configuration to control debug logging
 [X] prevent camera being opened multiple times (UI issue)
+[ ] release resources in -stopExecution: not finalize/dealloc
 
 TESTING
 [ ] compare performance between download and read
