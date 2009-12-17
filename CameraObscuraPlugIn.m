@@ -206,6 +206,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
                 self.camera = nil;
                 return;
             }
+            if (self.camera.hasOpenSession || self.camera.delegate) {
+                NSLog(@"ERROR - %@ selected capture source '%@' already in use by %@", self, self.camera.name, self.camera.delegate);
+                self.camera = nil;
+                return;
+            }
             self.camera.delegate = self;
             if (self.isExecutionEnabled) {
                 CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
@@ -345,8 +350,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         NSLog(@"NOTICE - %@ device '%@' not capable of tethered shooting in current configuration", self, device.name);
         return;
     }
+    if (camera.hasOpenSession || camera.delegate) {
+        NSLog(@"NOTICE - %@ device '%@' already in use by %@", self, device.name, device.delegate);
+        return;
+    }
 
-    CODebugLog(@"%@ %@", self, camera);
+    CODebugLog(@"%@ auto selected %@", self, camera);
     self.camera = camera;
 }
 
@@ -560,9 +569,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 - (ICCameraDevice*)_nextAvailableCamera {
     ICCameraDevice* camera = nil;
-    // NB - this could exclude some devices should that be necessary
     for (ICCameraDevice* c in self.deviceBrowser.devices) {
-        if (c.hasOpenSession || !c.canTakePictures)
+        if (!c.canTakePictures || c.hasOpenSession || c.delegate)
             continue;
         camera = c;
         break;

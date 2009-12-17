@@ -101,7 +101,8 @@ static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationConte
     for (ICCameraDevice* camera in plugIn.deviceBrowser.devices) {
         // TODO - localize 'Unknown'
         item = [[NSMenuItem alloc] initWithTitle:(camera.name ? camera.name : @"Unknown") action:NULL keyEquivalent:@""];
-        [item setEnabled:camera.canTakePictures];
+        // disallow stealing the device from another source
+        [item setEnabled:camera.canTakePictures && (!camera.delegate || camera.delegate == plugIn)];
 
         // if (camera.icon) {
         //     NSImage* image = [[NSImage alloc] initWithCGImage:camera.icon size:NSMakeSize(CGImageGetWidth(camera.icon), CGImageGetHeight(camera.icon))];
