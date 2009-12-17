@@ -101,10 +101,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)finalize {
-    [self _invalidateObservation];
-
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
+
+    [self _invalidateObservation];
 
     CGImageRelease(_sourceImage);
     self.placeHolderProvider = nil;
@@ -113,10 +113,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)dealloc {
-    [self _invalidateObservation];
-
     [self _cleanUpDeviceBrowser];
     [self _cleanUpCamera];
+
+    [self _invalidateObservation];
 
     CGImageRelease(_sourceImage);
     self.placeHolderProvider = nil;
@@ -497,14 +497,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_cleanUpCamera {
-    if (self.camera.hasOpenSession && self.camera.delegate == self) {
-        CODebugLog(@"%@ closing '%@'", self, self.camera.name);
-        [self.camera requestCloseSession];
-        self.openSessionRequestSucceeded = NO;
-    }
-    [self.camera removeObserver:self forKeyPath:@"delegate"];
-    if (self.camera.delegate == self)
-        self.camera.delegate = nil;
     self.camera = nil;
 }
 
