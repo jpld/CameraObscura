@@ -33,7 +33,7 @@ GENERAL
 [X] use build configuration to control debug logging
 [X] prevent camera being opened multiple times (UI issue)
 [ ] release resources in -stopExecution: not finalize/dealloc
-[~] check if camera device has openSession or if it has a delegate before trying to open session
+[X] check if camera device has openSession or if it has a delegate before trying to open session
 
 TESTING
 [ ] compare performance between download and read

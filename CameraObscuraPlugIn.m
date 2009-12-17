@@ -22,6 +22,7 @@
 
 static NSString* _COExecutionEnabledObservationContext = @"_COExecutionEnabledObservationContext";
 static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
+static NSString* _COCameraDelegateObservationContext = @"_COCameraDelegateObservationContext";
 
 
 // WORKAROUND - naming violation for cocoa memory management
@@ -32,7 +33,6 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 @interface CameraObscuraPlugIn()
 @property (nonatomic, getter=isExecutionEnabled) BOOL executionEnabled;
-@property (nonatomic) BOOL openSessionRequestSucceeded;
 @property (nonatomic, readwrite, assign) ICDeviceBrowser* deviceBrowser;
 @property (nonatomic, retain) id <QCPlugInOutputImageProvider> placeHolderProvider;
 - (void)_setupObservation;
@@ -48,7 +48,7 @@ static NSString* _COCameraObservationContext = @"_COCameraObservationContext";
 
 @dynamic inputCaptureSignal, outputImage, outputDoneSignal;
 @synthesize deleteImageFromSource = _deleteImageFromSource/*, saveCopyOfOriginalImage = _saveCopyOfOriginalImage*/;
-@synthesize executionEnabled = _isExecutionEnabled, openSessionRequestSucceeded = _openSessionRequestSucceeded, deviceBrowser = _deviceBrowser, camera = _camera, placeHolderProvider = _placeHolderProvider;
+@synthesize executionEnabled = _isExecutionEnabled, deviceBrowser = _deviceBrowser, camera = _camera, placeHolderProvider = _placeHolderProvider;
 
 static void _BufferReleaseCallback(const void* address, void* context) {
     CODebugLog(@"_BufferReleaseCallback(const void* address, void* context)");
@@ -172,9 +172,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         if (self.isExecutionEnabled && self.camera && !self.camera.hasOpenSession) {
             CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
             [self.camera requestOpenSession];
-                // WORKAROUND - ImageCaptureCore leaves open request unanswered. use timeout of 1 sec to catch
+            // use timeout to catch open session request failure
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1LL * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
-                if (self.openSessionRequestSucceeded)
+                if (self.camera.hasOpenSession && self.camera.delegate == self)
                     return;
                 NSLog(@"NOTICE - %@ failed to open session on '%@'", self, self.camera.name);
                 self.camera = [self _nextAvailableCamera];
@@ -182,7 +182,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         } else if (!self.isExecutionEnabled && self.camera && self.camera.hasOpenSession) {
             CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
             [self.camera requestCloseSession];
-            self.openSessionRequestSucceeded = NO;
 
             // cancel any inflight downloads
             [self.camera cancelDownload];
@@ -194,30 +193,34 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         if (!self.camera)
             return;
         if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
-            if (self.openSessionRequestSucceeded && self.camera.hasOpenSession) {
+            if (self.camera.hasOpenSession && self.camera.delegate == self) {
                 CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
                 [self.camera requestCloseSession];
-                self.openSessionRequestSucceeded = NO;
             }
-            self.camera.delegate = nil;
+
+            // stop observation of camera delegate
+            [self.camera removeObserver:self forKeyPath:@"delegate"];
+            if (self.camera.delegate == self)
+                self.camera.delegate = nil;
         } else {
             if (!self.camera.canTakePictures) {
                 NSLog(@"ERROR - %@ selected capture source '%@', not capable of tethered shooting in current configuration", self, self.camera.name);
                 self.camera = nil;
                 return;
             }
-            if (self.camera.hasOpenSession || self.camera.delegate) {
-                NSLog(@"ERROR - %@ selected capture source '%@' already in use by %@", self, self.camera.name, self.camera.delegate);
-                self.camera = nil;
-                return;
-            }
+            if (self.camera.hasOpenSession || self.camera.delegate)
+                NSLog(@"NOTICE - %@ taking over selection of '%@' from %@", self, self.camera.name, self.camera.delegate);
+
             self.camera.delegate = self;
+            // observe camera delegate
+            [self.camera addObserver:self forKeyPath:@"delegate" options:NSKeyValueObservingOptionPrior context:_COCameraDelegateObservationContext];
+
             if (self.isExecutionEnabled) {
                 CODebugLog(@"%@ requesting session open '%@'", self, self.camera.name);
                 [self.camera requestOpenSession];
-                // WORKAROUND - ImageCaptureCore leaves open request unanswered. use timeout of 1 sec to catch
+                // use timeout to catch open session request failure
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1LL * NSEC_PER_SEC), dispatch_get_current_queue(), ^{
-                    if (self.openSessionRequestSucceeded)
+                    if (self.camera.hasOpenSession && self.camera.delegate == self)
                         return;
                     NSLog(@"NOTICE - %@ failed to open session on '%@'", self, self.camera.name);
                     self.camera = [self _nextAvailableCamera];
@@ -226,6 +229,15 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             if (!self.camera.canDeleteOneFile)
                 NSLog(@"WARNING - %@ unable to remotely delete files from selected camera '%@', capture session may be limted to camera's local storage.", self, self.camera.name);
         }
+    } else if (context == _COCameraDelegateObservationContext) {
+        if ([(NSNumber*)[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
+          NSLog(@"NOTICE - %@ losing selection of '%@' to %@", self, self.camera.name, self.camera.delegate);
+          if (self.camera.hasOpenSession) {
+              CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
+              [self.camera requestCloseSession];
+          }
+          self.camera = nil;          
+      }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -332,6 +344,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
     */
 
+    // TOOD - teardown here instead of -dealloc/-finalize
+
     CODebugLogSelector();
 }
 
@@ -396,12 +410,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)device:(ICDevice*)device didOpenSessionWithError:(NSError*)error {
     CODebugLogSelector();
 
-    if (device != self.camera)
+    if (device != self.camera || !error)
         return;
-    if (!error) {
-        self.openSessionRequestSucceeded = YES;
-        return;
-    }
 
     NSLog(@"ERROR - %@ failed to open '%@'", self, self.camera.name);
 
@@ -487,12 +497,14 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_cleanUpCamera {
-    if (self.camera.hasOpenSession) {
+    if (self.camera.hasOpenSession && self.camera.delegate == self) {
         CODebugLog(@"%@ closing '%@'", self, self.camera.name);
         [self.camera requestCloseSession];
         self.openSessionRequestSucceeded = NO;
     }
-    self.camera.delegate = nil;
+    [self.camera removeObserver:self forKeyPath:@"delegate"];
+    if (self.camera.delegate == self)
+        self.camera.delegate = nil;
     self.camera = nil;
 }
 
