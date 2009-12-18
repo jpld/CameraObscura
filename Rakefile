@@ -26,7 +26,7 @@ task :create_archive, [:build_path, :version] do |t, args|
   %x{ zip -r "#{dir_name}.zip" "#{dir_name}" }
   FileUtils.rm_r(dir_name, {:secure => true})
 
-  %x{ open "#{dir_name}" }
+  %x{ open . }
 end
 
 desc 'delete archive'
