@@ -263,17 +263,6 @@
 		vrLen = 687;
 		vrLoc = 0;
 	};
-	D8BEA22610D0E0FC006F5EFF /* PlistBookmark */ = {
-		isa = PlistBookmark;
-		fRef = 8D5B49B7048680CD000E48DA /* Info.plist */;
-		fallbackIsa = PBXBookmark;
-		isK = 0;
-		kPath = (
-		);
-		name = /Users/jpm/sandbox/qc/CameraObscura/Info.plist;
-		rLen = 0;
-		rLoc = 9223372036854775808;
-	};
 	D8BEA45B10D2E931006F5EFF /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 16BA95410A7EB2EB001E4983 /* CameraObscuraPlugIn.m */;
@@ -303,52 +292,6 @@
 		rType = 0;
 		vrLen = 474;
 		vrLoc = 0;
-	};
-	D8BEA49110D2EB20006F5EFF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D8BEA49210D2EB20006F5EFF /* jpm.pbxuser */;
-		rLen = 0;
-		rLoc = 9223372036854775808;
-		rType = 0;
-	};
-	D8BEA49210D2EB20006F5EFF /* jpm.pbxuser */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = text;
-		name = jpm.pbxuser;
-		path = /Users/jpm/sandbox/qc/CameraObscura/CameraObscura.xcodeproj/jpm.pbxuser;
-		sourceTree = "<absolute>";
-	};
-	D8BEA49310D2EB20006F5EFF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D8BEA49410D2EB20006F5EFF /* jpm.pbxuser */;
-		name = "jpm.pbxuser: 25";
-		rLen = 0;
-		rLoc = 822;
-		rType = 0;
-		vrLen = 1565;
-		vrLoc = 280;
-	};
-	D8BEA49410D2EB20006F5EFF /* jpm.pbxuser */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = text;
-		name = jpm.pbxuser;
-		path = /Users/jpm/sandbox/qc/CameraObscura/CameraObscura.xcodeproj/jpm.pbxuser;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1073, 6256}}";
-			sepNavSelRange = "{11837, 0}";
-			sepNavVisRange = "{238, 1070}";
-		};
-	};
-	D8BEA49F10D2EB34006F5EFF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = D8BEA49410D2EB20006F5EFF /* jpm.pbxuser */;
-		name = "jpm.pbxuser: 25";
-		rLen = 0;
-		rLoc = 805;
-		rType = 0;
-		vrLen = 997;
-		vrLoc = 262;
 	};
 	D8D550ED10659B6C00ED18CC /* English */ = {
 		uiCtxt = {
