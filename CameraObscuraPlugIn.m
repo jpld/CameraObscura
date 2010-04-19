@@ -236,7 +236,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
               CODebugLog(@"%@ requesting session close '%@'", self, self.camera.name);
               [self.camera requestCloseSession];
           }
-          self.camera = nil;          
+          self.camera = nil;
       }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -274,7 +274,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
         // TODO - move this to a separate method and message from _didDownloadFile: and _didReadData:
         size_t bytesPerRow = CGImageGetWidth(_sourceImage) * 4;
-        if(bytesPerRow % 16)
+        if (bytesPerRow % 16)
             bytesPerRow = ((bytesPerRow / 16) + 1) * 16;
 
         void* baseAddress = valloc(CGImageGetHeight(_sourceImage) * bytesPerRow);
