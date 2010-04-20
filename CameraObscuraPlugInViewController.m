@@ -75,8 +75,8 @@ static NSString* _COVCDevicesObservationContext = @"_COVCDevicesObservationConte
 #pragma mark -
 
 - (void)_setupObservation {
-    [self.plugIn addObserver:self forKeyPath:@"camera" options:nil context:_COVCCameraObservationContext];
-    [[(CameraObscuraPlugIn*)self.plugIn deviceBrowser] addObserver:self forKeyPath:@"devices" options:nil context:_COVCDevicesObservationContext];
+    [self.plugIn addObserver:self forKeyPath:@"camera" options:0 context:_COVCCameraObservationContext];
+    [[(CameraObscuraPlugIn*)self.plugIn deviceBrowser] addObserver:self forKeyPath:@"devices" options:0 context:_COVCDevicesObservationContext];
 }
 
 - (void)_invalidateObservation {
