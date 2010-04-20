@@ -1,4 +1,9 @@
-v0.3.1 (09 dec 2009)
+v0.3.2 (19 Apr 2010)
+* prevent auto-selection of camera that is selected in another patch
+* allow patch to take camera control from another patch via settings popup
+* ensure patch resources are relinquished on delete, close or application quit
+
+v0.3.1 (09 Dec 2009)
 * harden usage of multiple plug-in instances
 * add MultiCam example composition
 
