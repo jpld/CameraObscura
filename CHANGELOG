@@ -1,3 +1,6 @@
+v0.3.3 (19 Apr 2010)
+* quick fix as 0.3.2 was mistakenly released built as debug and github caches files
+
 v0.3.2 (19 Apr 2010)
 * prevent auto-selection of camera that is selected in another patch
 * allow patch to take camera control from another patch via settings popup
